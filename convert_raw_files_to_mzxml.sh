@@ -2,10 +2,11 @@
 # Convert RAW files in RAW_DIR to mzXML files in MZXML_DIR
 # Fredrik Boulund 2015
 
-# Set path to ReAdW executable
+# Set important PATHs
 # This script expects a working Wine32 prefix in WINEPREFIX
 export READW=/home/boulund/research/TTT/src/ReAdW/bin/ReAdW.201510.xcalibur.exe
 export WINEPREFIX=/home/boulund/research/TTT/wine32/
+export GNU_PARALLEL=/local/bin/parallel
 
 # Check if user specified DIR to be converted
 #####
@@ -25,7 +26,7 @@ then
 fi
 
 # Perform RAW file conversions in parallel using GNU parallel
-parallel -j 20 'if [ ! -e $MZXML_DIR/{/.}.mzXML.gz ]; 
+$GNU_PARALLEL -j 20 'if [ ! -e $MZXML_DIR/{/.}.mzXML.gz ]; 
 	then
 		echo "Converting {} to $MZXML_DIR/{/.}.mzXML.gz";
 		wine $READW --centroid --nocompress --gzip {} $MZXML_DIR/{/.}.mzXML.gz;
