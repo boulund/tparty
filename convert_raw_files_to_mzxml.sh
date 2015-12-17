@@ -30,8 +30,8 @@ $GNU_PARALLEL -j 20 'if [ ! -e $MZXML_DIR/{/.}.mzXML.gz ];
 	then
 		echo "Converting {} to $MZXML_DIR/{/.}.mzXML.gz";
 		wine $READW --centroid --nocompress --gzip {} $MZXML_DIR/{/.}.mzXML.gz;
-	else
-		echo "Skipping {}"
+	#else
+	#	echo "Skipping {}"
 	fi' ::: ${RAW_DIR}/*.raw
 
 # Uncomment and use this code if GNU parallel is unavailable
