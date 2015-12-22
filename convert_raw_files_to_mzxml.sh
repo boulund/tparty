@@ -29,7 +29,7 @@ fi
 $GNU_PARALLEL -j $NUM_CPU 'if [ ! -e $MZXML_DIR/{/.}.mzXML.gz ]; 
 	then
 		echo "Converting {} to $MZXML_DIR/{/.}.mzXML.gz";
-		wine $READW --nocompress --gzip {} $MZXML_DIR/{/.}.mzXML.gz;
+		wine $READW --centroid --nocompress --gzip {} $MZXML_DIR/{/.}.mzXML.gz;
 	#else
 	#	echo "Skipping {}"
 	fi' ::: ${RAW_DIR}/*.raw
