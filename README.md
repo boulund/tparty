@@ -3,6 +3,7 @@ This document describes the components in the automated "The Tailored Treatment
 Proteotyping Pipeline". An overview of the pipeline is displayed below:
 
 
+![Overview of the TTT proteotyping pipeline](./img/ttt_proteotyping_pipeline_overview.png "TTT Proteotyping Pipeline")
 
 ## 0. RAW to mzXML conversion [raw2mzxml]
 ThermoFischer raw (*.raw) files are converted to mzXML using ReAdW (2015.1.0)
