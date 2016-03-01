@@ -36,6 +36,9 @@ def parse_commandline():
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
             default="/home/boulund/research/TTT/src/xtandem-20151215/tandem-linux-15-12-15-2/bin/rhel_static_link/tandem.exe",
             help="Path to X!Tandem executable [%(default)s].")
+    parser.add_argument("-k", "--keep", dest="keep", action="store_true",
+            default=False,
+            help="Keep temporary output files [%(default)s].")
     parser.add_argument("--loglevel", 
             choices=["INFO","DEBUG"],
             default="DEBUG",
@@ -110,15 +113,17 @@ def generate_xtandem_input_files(inputfiles):
     """
 
     for filename in inputfiles:
+        filename_abspath = path.abspath(filename)
         samplename = path.splitext(path.basename(filename))[0]
         sample_workdir = mkdtemp(prefix="tmp_", suffix="_"+samplename, dir=getcwd())
         chdir(sample_workdir)
         logging.debug("Changed workdir to %s", sample_workdir)
         if filename.endswith((".gz", ".GZ")):
             logging.debug("Filename %s ends with .gz or .GZ", filename)
-            gunzip_call = ["gunzip", "-c", filename]
+            gunzip_call = ["gunzip", "-c", filename_abspath]
             logging.debug("Gunzipping %s into %s", filename, samplename)
             with open(samplename, "w") as gunzipped:
+                logging.debug("gunzip call: %s", gunzip_call)
                 subprocess.call(gunzip_call, stdout=gunzipped)
             logging.debug("Unpacked the file to %s", samplename)
 
