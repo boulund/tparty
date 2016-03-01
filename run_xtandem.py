@@ -227,7 +227,7 @@ INPUT_XML = """<?xml version="1.0"?>
 
 if __name__ == "__main__":
     options = parse_commandline()
-    PARAMETERS.format(threads=options.threads)
+    PARAMETERS = PARAMETERS.format(threads=options.threads)
 
 
     workdir = getcwd()
