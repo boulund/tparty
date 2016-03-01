@@ -60,7 +60,13 @@ def run_xtandem(input_xml_filename, output_xml_filename, options):
     logging.info("Running X!tandem on %s", input_xml_filename)
     xtandem = Popen(xtandem_call, stdout=PIPE, stderr=PIPE)
     xtandem_output = xtandem.communicate()
-    xtandem_output_filename = glob(output_xml_filename+".*.xml")[-1]
+    try: 
+        xtandem_output_filename = glob(output_xml_filename+".*.xml")[-1]
+    except IndexError:
+        logging.error("No X!Tandem output file detected")
+        logging.error("stdout: %s", xtandem_output[0].decode("utf-8"))
+        logging.error("stderr: %s", xtandem_output[1].decode("utf-8"))
+        exit()
     if xtandem.returncode != 0:
         with open(xtandem_output_filename, "rb") as outputxml:
             outputxml.seek(-9, SEEK_END)
