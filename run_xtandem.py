@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.5
-# Fredrik Boulund 2015
-# Convenience script to generate X!TANDEM input xml files and run X!TANDEM.
+# Fredrik Boulund 2016
+# Convenience script to generate X!Tandem input xml files and run X!Tandem.
 
 from sys import argv, exit
 from subprocess import Popen, PIPE
@@ -19,7 +19,7 @@ def parse_commandline():
     Parses commandline.
     """
 
-    desc="""Convenience wrapper for running X!TANDEM. Fredrik Boulund 2015."""
+    desc="""Convenience wrapper for running X! Tandem. Fredrik Boulund 2016."""
 
     parser = argparse.ArgumentParser(description=desc)
 
@@ -29,13 +29,13 @@ def parse_commandline():
             help="Output filename.")
     parser.add_argument("--db", metavar="DB",
             default="/storage/boulund/TTT/ms_refdb/ms_refdb.fasta",
-            help="Database(s) to search against [%(default)s].")
+            help="Database to search against [%(default)s].")
+    parser.add_argument("-n", "--threads", dest="threads",
+            default=10,
+            help="Number of threads to use [%(default)s].")
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
-            default="/home/boulund/research/TTT/src/xtandem-20151215/tandem-linux-15-12-15-2/bin/tandem.exe",
+            default="/home/boulund/research/TTT/src/xtandem-20151215/tandem-linux-15-12-15-2/bin/rhel_static_link/tandem.exe",
             help="Path to X!Tandem executable [%(default)s].")
-    parser.add_argument("-k", "--keep-temporary-files", action="store_true", dest="keep",
-            default=False,
-            help="Remove temporary files [%(default)s].")
     parser.add_argument("--loglevel", 
             choices=["INFO","DEBUG"],
             default="DEBUG",
@@ -147,13 +147,13 @@ PARAMETERS = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<note type="input" label="spectrum, minimum parent m+h">500.0</note>
 	<note type="input" label="spectrum, minimum fragment mz">150.0</note>
 	<note type="input" label="spectrum, minimum peaks">15</note>
-	<note type="input" label="spectrum, threads">1</note>
+	<note type="input" label="spectrum, threads">{threads}</note>
 	<note type="input" label="spectrum, sequence batch size">1000</note>
 	<note type="input" label="residue, modification mass">57.022@C</note>
 	<note type="input" label="residue, potential modification mass" xsi:nil="true"/>
 	<note type="input" label="residue, potential modification motif" xsi:nil="true"/>
 	<note type="input" label="protein, taxon">other mammals</note>
-	<note type="input" label="protein, cleavage site">[RK]|{P}</note>
+	<note type="input" label="protein, cleavage site">[RK]|{{P}}</note>
 	<note type="input" label="protein, modified residue mass file" xsi:nil="true"/>
 	<note type="input" label="protein, cleavage C-terminal mass change">+17.002735</note>
 	<note type="input" label="protein, cleavage N-terminal mass change">+1.007825</note>
@@ -227,6 +227,8 @@ INPUT_XML = """<?xml version="1.0"?>
 
 if __name__ == "__main__":
     options = parse_commandline()
+    PARAMETERS.format(threads=options.threads)
+
 
     workdir = getcwd()
     for inputxml, outputxml, sample_workdir in generate_xtandem_input_files(options.FILES):
