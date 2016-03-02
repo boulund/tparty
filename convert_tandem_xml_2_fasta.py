@@ -88,7 +88,7 @@ def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile):
             header = ">{}:{}_{}".format(identity, expect, len(sequence))
             fastafile.write("{}\n{}\n".format(header, sequence))
             write_counter += 1
-    logging.info("Wrote %s peptide fragments from %s unique protein sequences to %s", write_counter, sourceheaders, outfilename)
+    logging.info("Wrote %s peptide fragments from %s unique protein sequences to %s", write_counter, len(sourceheaders), outfilename)
 
 
 
