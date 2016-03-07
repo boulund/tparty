@@ -1,0 +1,71 @@
+# TTT proteotyping workflow snakemake configuration file
+# Fredrik Boulund 2016
+# vi:syntax=yaml
+# coding: utf-8
+
+loglevel:
+    DEBUG
+
+workdir:
+    /storage/TTT/
+
+#####################################################################
+# Pipeline reference data
+#####################################################################
+xtandem_db:
+    /storage/TTT/reference_data/xtandem_refdb.fasta
+blat_genome_db:
+    /storage/TTT/reference_data/blat_db.fasta
+taxref_db:
+    /storage/TTT/reference_data/taxref.sqlite3
+annotation_db:
+    /storage/TTT/reference_data/annotation_db.sqlite3
+human_proteome:
+    /storage/TTT/reference_data/human_proteome_UP000005640.fasta
+blacklist:
+    /storage/TTT/reference_data/blacklist.txt
+blat_resistance_db:
+    /storage/TTT/reference_data/resfinder.pfa
+resfinder_sqlite3_db:
+    /storage/TTT/reference_data/resfinder.sqlite3
+
+
+#####################################################################
+# Workflow data directories
+#####################################################################
+rawdir:
+    /storage/TTT/0.raw
+mzXMLdir:
+    /storage/TTT/1.mzXML
+xmldir:
+    /storage/TTT/2.xml
+fastadir:
+    /storage/TTT/3.fasta
+blast8dir:
+    /storage/TTT/4.blast8
+resultsdir:
+    /storage/TTT/5.results
+
+
+#####################################################################
+# Application settings
+#####################################################################
+# ReAdW settings
+readw_exe:
+    /storage/TTT/applications/ReAdW/bin/ReAdW.201510.xcalibur.exe
+wineprefix:
+    /storage/TTT/applications/wine32
+
+# X! Tandem settings
+xtandem_exe:
+    /storage/TTT/applications/xtandem-20151215/tandem-linux-15-12-15-2/bin/rhel_static_link/tandem.exe
+xtandem_threads:
+    11
+
+# pBLAT settings
+blat_threads:
+    11
+
+# Resistance determination
+resistance_min_identity:
+    100.0
