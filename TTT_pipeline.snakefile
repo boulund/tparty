@@ -125,8 +125,8 @@ rule xtandem_bacterial:
 	# the filename. The file needs to be renamed after X!Tandem finishes.
 	shell:
 		"""
-		echo 'run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[xtandem_db]} --loglevel {config[loglevel]} {input}'
-		echo 'mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.xml'
+		run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[xtandem_db]} --loglevel {config[loglevel]} {input}
+		mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.xml
 		"""
 
 rule bacterial_xml2fasta:
@@ -182,7 +182,7 @@ rule taxonomic_composition:
 		"{sample}.results.log"
 	shell:
 		"""
-		proteotyping.py {input} --output {output.results} --blacklist {config[blacklist]} --write-xlsx --loglevel {config[loglevel]}
+		taxonomic_composition.py {input} --output {output.results} --blacklist {config[blacklist]} --write-xlsx --loglevel {config[loglevel]}
 		"""
 
 
@@ -239,8 +239,8 @@ rule xtandem_human:
 	# the filename. The file needs to be renamed after X!Tandem finishes.
 	shell:
 		"""
-		echo 'run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[human_proteome]} --loglevel {config[loglevel]} {input}'
-		echo 'mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.human.xml'
+		run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[human_proteome]} --loglevel {config[loglevel]} {input}
+		mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.human.xml
 		"""
 
 rule unique_human_proteins:
