@@ -15,13 +15,13 @@ workdir:
 xtandem_db:
     /storage/TTT/reference_data/xtandem_refdb.fasta
 blat_genome_db:
-    /storage/TTT/reference_data/blat_db.fasta
+    /storage/TTT/reference_data/reference_genomes.fasta
 taxref_db:
     /storage/TTT/reference_data/taxref.sqlite3
 annotation_db:
     /storage/TTT/reference_data/annotation_db.sqlite3
 human_proteome:
-    /storage/TTT/reference_data/human_proteome_UP000005640.fasta
+    /storage/TTT/reference_data/human_proteome.fasta
 blacklist:
     /storage/TTT/reference_data/blacklist.txt
 blat_resistance_db:
@@ -52,13 +52,13 @@ resultsdir:
 #####################################################################
 # ReAdW settings
 readw_exe:
-    /storage/TTT/applications/ReAdW/bin/ReAdW.201510.xcalibur.exe
+    /storage/TTT/bin/ReAdW.201510.xcalibur.exe
 wineprefix:
     /storage/TTT/applications/wine32
 
 # X! Tandem settings
 xtandem_exe:
-    /storage/TTT/applications/xtandem-20151215/tandem-linux-15-12-15-2/bin/rhel_static_link/tandem.exe
+    /storage/TTT/bin/tandem.exe
 xtandem_threads:
     11
 
