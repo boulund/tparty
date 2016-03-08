@@ -10,7 +10,7 @@ ThermoFischer raw (*.raw) files are converted to mzXML using ReAdW (2015.1.0)
 running via Wine (1.6.1) under Red Hat Enterprise Linux Server 6.6. 
 The command line for file conversion is equivalent to:
 
-    wine ReAdW.exe --nocompress --gzip $RAWFILE $MZXMLFILE
+    wine ReAdW.exe --centroid --nocompress --gzip $RAWFILE $MZXMLFILE
 
 A bash script finds new raw files in `/collaborator/TTT/raw` that haven't
 already been converted and runs ReAdW to convert them in parallel using GNU
