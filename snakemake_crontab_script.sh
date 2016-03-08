@@ -20,4 +20,5 @@ export PATH=/storage/TTT/bin:$PATH
 flock -n $LOCKFILE snakemake \
 	--snakefile TTT_pipeline.snakefile \
 	--configfile TTT_pipeline_snakemake_config.yaml \
-	--cores 22
+	--cores 22 \
+	$1 
