@@ -112,21 +112,14 @@ rule xtandem_bacterial:
 	input:
 		config["mzXMLdir"]+"/{sample}.mzXML.gz"
 	output:
-		temp("./{sample}.mzXML"),
-		temp("./input_{sample}.xml"),
 		xmlfile=config["xmldir"]+"/{sample}.bacterial.xml"
 	log:
 		"input_{sample}.xml.log"
 	threads: 
 		config["xtandem_threads"]
-	shadow: 
-		True
-	# X!Tandem annoyingly appends the run date and time to
-	# the filename. The file needs to be renamed after X!Tandem finishes.
 	shell:
 		"""
-		run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[xtandem_db]} --loglevel {config[loglevel]} {input}
-		mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.xml
+		run_xtandem.py --output {output.xmlfile} -x {config[xtandem_exe]} -n {threads} --db {config[xtandem_db]} --loglevel {config[loglevel]} {input}
 		"""
 
 rule bacterial_xml2fasta:
@@ -152,7 +145,7 @@ rule unique_bacterial_proteins:
 		config["resultsdir"]+"/{sample}.unique_bacterial_proteins.txt"
 	shell:
 		"""
-		create_unique_protein_list.py -o {output}
+		create_unique_protein_list.py -o {output} {input}
 		"""
 
 rule blat_bacterial:
@@ -226,21 +219,14 @@ rule xtandem_human:
 	input:
 		config["mzXMLdir"]+"/{sample}.mzXML.gz"
 	output:
-		temp("./{sample}.mzXML"),
-		temp(".input_{sample}.xml"),
 		xmlfile=config["xmldir"]+"/{sample}.human.xml"
 	log:
 		"input_{sample}.xml.log"
 	threads: 
 		config["xtandem_threads"]
-	shadow:
-		True
-	# X!Tandem annoyingly appends the run date and time to
-	# the filename. The file needs to be renamed after X!Tandem finishes.
 	shell:
 		"""
-		run_xtandem.py --output {output.xmlfile} -n {threads} --db {config[human_proteome]} --loglevel {config[loglevel]} {input}
-		mv {output.xmlfile}* {config[xmldir]}/{wildcards.sample}.human.xml
+		run_xtandem.py --output {output.xmlfile} -x {config[xtandem_exe]} -n {threads} --db {config[human_proteome]} --loglevel {config[loglevel]} {input}
 		"""
 
 rule unique_human_proteins:
@@ -251,7 +237,7 @@ rule unique_human_proteins:
 		config["resultsdir"]+"/{sample}.unique_human_proteins.txt"
 	shell:
 		"""
-		create_unique_protein_list.py -o {output}
+		create_unique_protein_list.py -o {output} {input}
 		"""
 
 
