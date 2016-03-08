@@ -5,6 +5,10 @@
 # Snakemake file for TTT proteotyping analysis workflow
 # Fredrik Boulund 2016
 
+# Shadow rules were introduced in 3.5
+from snakemake.utils import min_version
+min_version("3.5")  
+
 # Load configuration from YAML config file.
 # The config parameters are stored in global dict 'config'.
 configfile: "/home/boulund/research/TTT/code/TTT_proteotyping_pipeline/TTT_pipeline_snakemake_config.yaml"
