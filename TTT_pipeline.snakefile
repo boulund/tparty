@@ -130,7 +130,7 @@ rule bacterial_xml2fasta:
 		config["fastadir"]+"/{sample}.bacterial.fasta"
 	shell:
 		"""
-		convert_xtandem_xml_2_fasta.py {input} {output}
+		convert_tandem_xml_2_fasta.py {input} --outfile {output}
 		"""
 
 #######################################
