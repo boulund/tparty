@@ -5,7 +5,7 @@
 from sys import argv, exit
 from subprocess import Popen, PIPE
 from glob import glob
-from os import path, getcwd, chdir, mkdir, SEEK_END
+from os import path, getcwd, chdir, mkdir, SEEK_END, listdir
 from tempfile import mkdtemp
 import shutil
 import shlex
@@ -36,9 +36,6 @@ def parse_commandline():
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
             default="/home/boulund/research/TTT/src/xtandem-20151215/tandem-linux-15-12-15-2/bin/rhel_static_link/tandem.exe",
             help="Path to X!Tandem executable [%(default)s].")
-    parser.add_argument("-k", "--keep", dest="keep", action="store_true",
-            default=False,
-            help="Keep temporary output files [%(default)s].")
     parser.add_argument("--loglevel", 
             choices=["INFO","DEBUG"],
             default="DEBUG",
@@ -57,36 +54,42 @@ def run_xtandem(input_xml_filename, output_xml_filename, options):
     """
     Runs X!tandem on a single mzXML file defined in an input_{samplename}.xml.
     """
-
     xtandem_call = shlex.split("{xtandem_path} {inputxml}".format(xtandem_path=options.xtandem_path, inputxml=input_xml_filename))
     logging.debug("X!tandem call: %s", " ".join(xtandem_call))
     logging.info("Running X!tandem on %s", input_xml_filename)
     xtandem = Popen(xtandem_call, stdout=PIPE, stderr=PIPE)
     xtandem_output = xtandem.communicate()
     try: 
-        xtandem_output_filename = glob(output_xml_filename+".*.xml")[-1]
+        logging.debug("Expecting X!Tandem output somewhere here: %s", output_xml_filename)
+        xtandem_output_filename = glob(path.splitext(output_xml_filename)[0]+".*.xml")[-1]
+        logging.debug("Found X!Tandem output file %s", xtandem_output_filename)
     except IndexError:
         logging.error("No X!Tandem output file detected")
         logging.error("stdout: %s", xtandem_output[0].decode("utf-8"))
         logging.error("stderr: %s", xtandem_output[1].decode("utf-8"))
+        logging.error("current dir: %s", listdir('.'))
         exit()
+
     if xtandem.returncode != 0:
         with open(xtandem_output_filename, "rb") as outputxml:
             outputxml.seek(-9, SEEK_END)
             last_line = outputxml.readline()
         if last_line == "</bioml>\n":
-            logging.warning("X!!tandem returned non-zero exit code, but outputfile looks OK!")
+            logging.warning("X!tandem returned non-zero exit code, but outputfile looks OK!")
         else:
-            logging.error("X!!tandem returned non-zero exit code, and outputfile appears incomplete!")
+            logging.error("X!tandem returned non-zero exit code, and outputfile appears incomplete!")
     else:
-        logging.info("Finished running X!tandem on %s.", input_xml_filename)
+        logging.info("Finished running X!Tandem on %s.", input_xml_filename)
 
     with open(input_xml_filename+".log", "w") as log:
         logging.debug("Writing X!tandem stdout (and stderr) to file %s", log.name)
         log.write(xtandem_output[0].decode("utf8"))
         log.write("\nSTDERR:\n")
         log.write(xtandem_output[1].decode("utf8"))
-    return xtandem_output_filename
+
+    # Move annoyingly named X!Tandem output file to requested output location.
+    logging.debug("Moving X!Tandem outputfile '%s' to '%s", xtandem_output_filename, output_xml_filename)
+    shutil.move(xtandem_output_filename, output_xml_filename)
 
 
 def create_misc_xtandem_files(options):
@@ -108,16 +111,12 @@ def create_misc_xtandem_files(options):
 def generate_xtandem_input_files(inputfiles):
     """
     Creates input_FILENAME.xml for each input file.
-
-    Note that this also changes workdir!
     """
 
     for filename in inputfiles:
         filename_abspath = path.abspath(filename)
         samplename = path.splitext(path.basename(filename))[0]
-        sample_workdir = mkdtemp(prefix="tmp_", suffix="_"+samplename, dir=getcwd())
-        chdir(sample_workdir)
-        logging.debug("Changed workdir to %s", sample_workdir)
+
         if filename.endswith((".gz", ".GZ")):
             logging.debug("Filename %s ends with .gz or .GZ", filename)
             gunzip_call = ["gunzip", "-c", filename_abspath]
@@ -136,7 +135,7 @@ def generate_xtandem_input_files(inputfiles):
                 output = "output_"+samplename+".xml"
             input_xml.write(INPUT_XML.format(input=samplename, output=output))
         logging.debug("Wrote file %s for sample %s", input_xml_filename, samplename)
-        yield input_xml_filename, output, sample_workdir
+        yield input_xml_filename, output
 
 
 # COMPLETE INPUT FILES FOR X!!TANDEM AS STRINGS
@@ -232,7 +231,7 @@ INPUT_XML = """<?xml version="1.0"?>
 	<note type="input" label="list path, taxonomy information">taxonomy.xml</note>
 	<note type="input" label="protein, taxon">bacteria</note>
 	<note type="input" label="spectrum, path">{input}</note>
-	<note type="input" label="output, path">{output}.xml</note>
+	<note type="input" label="output, path">{output}</note>
 </bioml>"""
 
 
@@ -240,15 +239,6 @@ if __name__ == "__main__":
     options = parse_commandline()
     PARAMETERS = PARAMETERS.format(threads=options.threads)
 
-
-    workdir = getcwd()
-    for inputxml, outputxml, sample_workdir in generate_xtandem_input_files(options.FILES):
+    for inputxml, outputxml in generate_xtandem_input_files(options.FILES):
         create_misc_xtandem_files(options)
         xtandem_output_filename = run_xtandem(inputxml, outputxml, options)
-        logging.debug("Moving outputfile from temporary location '%s' to '%s", xtandem_output_filename, outputxml)
-        shutil.move(xtandem_output_filename, path.join(workdir, outputxml))
-        chdir(workdir)
-        if not options.keep:
-            logging.debug("Removing temporary files in %s...", sample_workdir)
-            shutil.rmtree(sample_workdir)
-            logging.debug("Successfully removed temporary files.")
