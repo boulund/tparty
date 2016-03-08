@@ -206,7 +206,7 @@ rule determine_resistance:
 		config["resultsdir"]+"/{sample}.resistance.txt"
 	shell:
 		"""
-		parse_AR_blast8.py --resfinder {config[resfinder_sqlite3_db]} --min-identity {config[resistance_min_identity]} --keep-going --output {output}
+		parse_AR_blast8.py --resfinder {config[resfinder_sqlite3_db]} --min-identity {config[resistance_min_identity]} --keep-going --output {output} {input}
 		"""
 
 
