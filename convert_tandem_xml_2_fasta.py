@@ -19,10 +19,10 @@ def parse_commandline():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("FILE", type=str, nargs="+",
         help="Filename of output XML file to convert to FASTA")
-    parser.add_argument("-d", dest="outdir", metavar="DIR", type=str,
+    parser.add_argument("-d", "--outdir", dest="outdir", metavar="DIR", type=str,
         default="fasta",
         help="Output directory [%(default)s].")
-    parser.add_argument("-O", dest="outfile", metavar="FILE", 
+    parser.add_argument("-o", "--outfile", dest="outfile", metavar="FILE", 
         default="",
         help="Output filename. If specified only one file is expected and outdir is disregarded.")
     parser.add_argument("--loglevel", 
