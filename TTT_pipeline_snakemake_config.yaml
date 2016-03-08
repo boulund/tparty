@@ -1,7 +1,8 @@
-# TTT proteotyping workflow snakemake configuration file
-# Fredrik Boulund 2016
 # vi:syntax=yaml
 # coding: utf-8
+#
+# TTT proteotyping workflow snakemake configuration file
+# Fredrik Boulund 2016
 
 loglevel:
     DEBUG
@@ -10,7 +11,7 @@ workdir:
     /storage/TTT/
 
 #####################################################################
-# Pipeline reference data
+# Pipeline reference data  (absolute paths)
 #####################################################################
 xtandem_db:
     /storage/TTT/reference_data/xtandem_refdb.fasta
@@ -31,24 +32,24 @@ resfinder_sqlite3_db:
 
 
 #####################################################################
-# Workflow data directories
+# Workflow data directories  (relative to workdir)
 #####################################################################
 rawdir:
-    /storage/TTT/0.raw
+    0.raw
 mzXMLdir:
-    /storage/TTT/1.mzXML
+    1.mzXML
 xmldir:
-    /storage/TTT/2.xml
+    2.xml
 fastadir:
-    /storage/TTT/3.fasta
+    3.fasta
 blast8dir:
-    /storage/TTT/4.blast8
+    4.blast8
 resultsdir:
-    /storage/TTT/5.results
+    5.results
 
 
 #####################################################################
-# Application settings
+# Application settings  (absolute paths)
 #####################################################################
 # ReAdW settings
 readw_exe:

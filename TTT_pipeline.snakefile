@@ -9,6 +9,9 @@
 # The config parameters are stored in global dict 'config'.
 configfile: "/home/boulund/research/TTT/code/TTT_proteotyping_pipeline/TTT_pipeline_snakemake_config.yaml"
 
+# Set workdir
+workdir: config["workdir"]
+
 #####################################################################
 # Define SAMPLES to run on
 #####################################################################
@@ -70,11 +73,13 @@ rule upto_mzxml:
 
 rule upto_xtandem:
 	input:
-		expand(config["xmldir"]+"/{sample}.bacterial.xml", sample=SAMPLES)
+		expand(config["xmldir"]+"/{sample}.bacterial.xml", sample=SAMPLES),
+		expand(config["xmldir"]+"/{sample}.human.xml", sample=SAMPLES)
 
 rule upto_fasta:
 	input:
-		expand(config["fastadir"]+"/{sample}.bacterial.fasta", sample=SAMPLES)
+		expand(config["fastadir"]+"/{sample}.bacterial.fasta", sample=SAMPLES),
+		expand(config["fastadir"]+"/{sample}.human.fasta", sample=SAMPLES)
 
 rule upto_blast8:
 	input:
@@ -117,6 +122,8 @@ rule xtandem_bacterial:
 		"input_{sample}.xml.log"
 	threads: 
 		config["xtandem_threads"]
+	shadow:
+		True
 	shell:
 		"""
 		run_xtandem.py --output {output.xmlfile} -x {config[xtandem_exe]} -n {threads} --db {config[xtandem_db]} --loglevel {config[loglevel]} {input}
@@ -224,6 +231,8 @@ rule xtandem_human:
 		"input_{sample}.xml.log"
 	threads: 
 		config["xtandem_threads"]
+	shadow:
+		True
 	shell:
 		"""
 		run_xtandem.py --output {output.xmlfile} -x {config[xtandem_exe]} -n {threads} --db {config[human_proteome]} --loglevel {config[loglevel]} {input}
