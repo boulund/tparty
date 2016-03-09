@@ -178,13 +178,14 @@ rule taxonomic_composition:
 	input:
 		config["blast8dir"]+"/{sample}.bacterial.blast8"
 	output:
+		sample_db=config["blast8dir"]+"/{sample}.bacterial.blast8.sqlite3",
 		results=config["resultsdir"]+"/{sample}.taxonomic_composition.txt",
 		xlsx=config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx"
 	log:
-		"{sample}.results.log"
+		"{sample}.proteotyping.log"
 	shell:
 		"""
-		taxonomic_composition.py {input} --output {output.results} --blacklist {config[blacklist]} --write-xlsx --loglevel {config[loglevel]}
+		taxonomic_composition.py {input} --taxref-db {config[taxref_db]} --annotation-db {config[annotation_db]} --blacklist {config[blacklist]} --write-xlsx {output.xlsx} --loglevel {config[loglevel]} > {output.results}
 		"""
 
 
