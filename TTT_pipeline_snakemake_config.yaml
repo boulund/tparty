@@ -63,10 +63,6 @@ xtandem_exe:
 xtandem_threads:
     11
 
-# pBLAT settings
-blat_threads:
-    11
-
 # Resistance determination
 resistance_min_identity:
     100.0

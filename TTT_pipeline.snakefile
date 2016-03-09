@@ -160,18 +160,16 @@ rule unique_bacterial_proteins:
 		"""
 
 rule blat_bacterial:
-	"""pBLAT translated search against reference sequence database"""
+	"""BLAT translated search against reference sequence database"""
 	input:
 		config["fastadir"]+"/{sample}.bacterial.fasta"
 	output:
 		config["blast8dir"]+"/{sample}.bacterial.blast8"
-	threads: 
-		config["blat_threads"]
 	shadow:
 		True
 	shell:
 		"""
-		pblat {config[blat_genome_db]} {input} -threads={threads} -out=blast8 -t=dnax -q=prot -tileSize=5 -stepSize=5 -minIdentity=90 {output}
+		blat {config[blat_genome_db]} {input} -out=blast8 -t=dnax -q=prot -tileSize=5 -stepSize=5 -minIdentity=90 {output}
 		"""
 
 rule taxonomic_composition:
@@ -195,7 +193,7 @@ rule taxonomic_composition:
 #######################################
 
 rule blat_resistance:
-	"""pBLAT protein-to-protein search against resistance gene database"""
+	"""BLAT protein-to-protein search against resistance gene database"""
 	input:
 		config["fastadir"]+"/{sample}.bacterial.fasta"
 	output:
@@ -206,7 +204,7 @@ rule blat_resistance:
 		True
 	shell:
 		"""
-		pblat {config[blat_resistance_db]} {input} -threads={threads} -out=blast8 -prot -minIdentity=90 {output}
+		blat {config[blat_resistance_db]} {input} -out=blast8 -prot -minIdentity=90 {output}
 		"""
 
 rule determine_resistance:
