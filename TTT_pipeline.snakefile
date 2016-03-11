@@ -180,12 +180,21 @@ rule taxonomic_composition:
 	output:
 		sample_db=config["blast8dir"]+"/{sample}.bacterial.blast8.sqlite3",
 		results=config["resultsdir"]+"/{sample}.taxonomic_composition.txt",
-		xlsx=config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx"
+		xlsx=config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx",
+		discpeps=config["resultsdir"]+"/{sample}.discriminative_peptides.txt"
 	log:
-		"{sample}.proteotyping.log"
+		config["resultsdir"]+"/{sample}.proteotyping.log"
 	shell:
 		"""
-		taxonomic_composition.py {input} --taxref-db {config[taxref_db]} --annotation-db {config[annotation_db]} --blacklist {config[blacklist]} --write-xlsx {output.xlsx} --loglevel {config[loglevel]} > {output.results}
+		taxonomic_composition.py {input} \
+				--taxref-db {config[taxref_db]} \
+				--annotation-db {config[annotation_db]} \
+				--blacklist {config[blacklist]} \
+				--write-xlsx {output.xlsx} \
+				--write-discriminative-peptides {output.discpeps} \
+				--loglevel {config[loglevel]} \
+				--logfile {log} \
+				--output {output.results}
 		"""
 
 
