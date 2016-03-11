@@ -178,7 +178,7 @@ rule taxonomic_composition:
 	input:
 		config["blast8dir"]+"/{sample}.bacterial.blast8"
 	output:
-		sample_db=config["blast8dir"]+"/{sample}.bacterial.blast8.sqlite3",
+		sample_db=config["resultsdir"]+"/{sample}.sqlite3",
 		results=config["resultsdir"]+"/{sample}.taxonomic_composition.txt",
 		xlsx=config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx",
 		discpeps=config["resultsdir"]+"/{sample}.discriminative_peptides.txt"
@@ -194,6 +194,7 @@ rule taxonomic_composition:
 				--write-discriminative-peptides {output.discpeps} \
 				--loglevel {config[loglevel]} \
 				--logfile {log} \
+				--sample-db {output.sample_db} \
 				--output {output.results}
 		"""
 
