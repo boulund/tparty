@@ -209,8 +209,6 @@ rule blat_resistance:
 		config["fastadir"]+"/{sample}.bacterial.fasta"
 	output:
 		config["blast8dir"]+"/{sample}.resistance.blast8"
-	threads:
-		config["blat_threads"]
 	shadow:
 		True
 	shell:
