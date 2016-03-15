@@ -7,9 +7,9 @@
 # the number of cores set here, and for a rule requiring 11 CPUs only two
 # simultaneous instances of that rule can run with 25 CPUs specified here.
 CORES=25
-# Set the process niceness (default processes run on 10; higher is lower
-# priority).
-NICENESS=12
+# Adjust the process niceness (default processes run on 10; higher is lower
+# priority). This number of is added to the default niceness.
+NICENESS=2
 
 # Lockfile used to indicate if snakemake workflow is currently running.
 # 'flock' opens the file for reading to indicate when the workflow is running.
@@ -29,7 +29,7 @@ export PATH=/storage/TTT/bin:$PATH
 # currently in progress. flock detects if the file is already opened and 
 # the -n command makes it do nothing if snakemake is already running.
 flock -n $LOCKFILE \
-	nice $NICENESS \
+	nice -n $NICENESS \
 	snakemake \
 		--snakefile TTT_pipeline.snakefile \
 		--configfile TTT_pipeline_snakemake_config.yaml \
