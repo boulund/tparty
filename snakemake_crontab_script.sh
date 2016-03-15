@@ -8,8 +8,8 @@
 # simultaneous instances of that rule can run with 25 CPUs specified here.
 CORES=25
 # Adjust the process niceness (default processes run on 10; higher is lower
-# priority). This number of is added to the default niceness.
-NICENESS=2
+# priority). 
+NICENESS=12
 
 # Lockfile used to indicate if snakemake workflow is currently running.
 # 'flock' opens the file for reading to indicate when the workflow is running.
