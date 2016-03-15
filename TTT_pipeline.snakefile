@@ -49,26 +49,26 @@ localrules:
 
 rule all:
 	input:
-		expand(config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.taxonomic_composition.txt", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.resistance.txt", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.unique_human_proteins.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.xlsx", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.resistance.txt", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt", sample=SAMPLES)
 
 
 rule all_proteotyping:
 	input:
-		expand(config["resultsdir"]+"/{sample}.taxonomic_composition.txt", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.xlsx", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES)
 
 rule all_resistance:
 	input:
-		expand(config["resultsdir"]+"/{sample}.resistance.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.resistance.txt", sample=SAMPLES)
 
 rule all_human:
 	input:
-		expand(config["resultsdir"]+"/{sample}.unique_human_proteins.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt", sample=SAMPLES)
 
 
 rule upto_mzxml:
@@ -92,7 +92,7 @@ rule upto_blast8:
 
 rule upto_unique_bacterial_proteins:
 	input:
-		expand(config["resultsdir"]+"/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES)
 
 
 #####################################################################
@@ -153,7 +153,7 @@ rule unique_bacterial_proteins:
 	input:
 		config["xmldir"]+"/{sample}.bacterial.xml"
 	output:
-		config["resultsdir"]+"/{sample}.unique_bacterial_proteins.txt"
+		config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt"
 	shell:
 		"""
 		create_unique_protein_list.py -o {output} {input}
@@ -178,12 +178,12 @@ rule taxonomic_composition:
 	input:
 		config["blast8dir"]+"/{sample}.bacterial.blast8"
 	output:
-		sample_db=config["resultsdir"]+"/{sample}.sqlite3",
-		results=config["resultsdir"]+"/{sample}.taxonomic_composition.txt",
-		xlsx=config["resultsdir"]+"/{sample}.taxonomic_composition.xlsx",
-		discpeps=config["resultsdir"]+"/{sample}.discriminative_peptides.txt"
+		sample_db=config["resultsdir"]+"/{sample}/{sample}.sqlite3",
+		results=config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt",
+		xlsx=config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.xlsx",
+		discpeps=config["resultsdir"]+"/{sample}/{sample}.discriminative_peptides.txt"
 	log:
-		config["resultsdir"]+"/{sample}.proteotyping.log"
+		config["resultsdir"]+"/{sample}/{sample}.proteotyping.log"
 	shell:
 		"""
 		taxonomic_composition.py {input} \
@@ -221,7 +221,7 @@ rule determine_resistance:
 	input:
 		config["blast8dir"]+"/{sample}.resistance.blast8"
 	output:
-		config["resultsdir"]+"/{sample}.resistance.txt"
+		config["resultsdir"]+"/{sample}/{sample}.resistance.txt"
 	shell:
 		"""
 		parse_AR_blast8.py --resfinder {config[resfinder_sqlite3_db]} --min-identity {config[resistance_min_identity]} --keep-going --output {output} {input}
@@ -254,7 +254,7 @@ rule unique_human_proteins:
 	input:
 		config["xmldir"]+"/{sample}.human.xml"
 	output:
-		config["resultsdir"]+"/{sample}.unique_human_proteins.txt"
+		config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt"
 	shell:
 		"""
 		create_unique_protein_list.py -o {output} {input}
