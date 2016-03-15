@@ -4,9 +4,17 @@
 # TTT proteotyping workflow snakemake configuration file
 # Fredrik Boulund 2016
 
+# Email address to send error reports to. Can be a comma-separated 
+# list with several addresses.
+email:
+    fredrik.boulund@chalmers.se
+
+# Global log level for all called scripts supporting different loglevels.
+# Normally accepts DEBUG or INFO.
 loglevel:
     DEBUG
 
+# The TTT proteotyping workflow workdir.
 workdir:
     /storage/TTT/
 

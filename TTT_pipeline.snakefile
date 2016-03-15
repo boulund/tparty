@@ -16,6 +16,18 @@ configfile: "/home/boulund/research/TTT/code/TTT_proteotyping_pipeline/TTT_pipel
 # Set workdir
 workdir: config["workdir"]
 
+onsuccess:
+	print("Workflow finished without errors.")
+
+# Send an email notifying that there was an error.
+onerror:
+	print("Workflow finished with error(s).")
+	print("Check the logfile and fix errors until next workflow invocation.")
+	shell("""mail -s "TTT Proteotyping Pipeline: error(s) occured." {config[email]} < {log}""")
+
+
+
+
 #####################################################################
 # Define SAMPLES to run on
 #####################################################################
