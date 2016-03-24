@@ -65,7 +65,8 @@ rule all:
 		expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt", sample=SAMPLES),
 		expand(config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt", sample=SAMPLES),
 		expand(config["resultsdir"]+"/{sample}/{sample}.resistance.txt", sample=SAMPLES),
-		expand(config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt", sample=SAMPLES)
+		expand(config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt", sample=SAMPLES),
+		expand(config["resultsdir"]+"/{sample}/{sample}.gspread_reported", sample=SAMPLES)
 
 
 rule all_proteotyping:
@@ -271,5 +272,27 @@ rule unique_human_proteins:
 		"""
 		create_unique_protein_list.py -o {output} {input}
 		"""
+
+#######################################
+## Google Docs Spreadsheet reporting
+#######################################
+rule gspread_report:
+	"""Report results to Google Docs spreadsheet"""
+	input:
+		taxcomp=config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt",
+		bac_prot=config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt",
+		hum_prot=config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt",
+		disc_peps=config["resultsdir"]+"/{sample}/{sample}.discriminative_peptides.txt",
+		peps=config["fastadir"]+"/{sample}.bacterial.fasta"
+	output:
+		config["resultsdir"]+"/{sample}/{sample}.gspread_reported"
+	log:
+		config["resultsdir"]+"/{sample}/{sample}.gspread_report.log"
+	shell:
+		"""
+		gspread_report.py --tokenfile {config[google_token]} --logfile {log} {wildcards.sample}
+		touch {output}
+		"""
+
 
 

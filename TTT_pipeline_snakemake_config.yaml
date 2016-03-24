@@ -9,6 +9,11 @@
 email:
     fredrik.boulund@chalmers.se
 
+# JSON tokenfile with OAuth2 authentication information for 
+# Google Docs spreadsheet reporting.
+google_token:
+    /storage/TTT/code/google_token.json
+
 # Global log level for all called scripts supporting different loglevels.
 # Normally accepts DEBUG or INFO.
 loglevel:
