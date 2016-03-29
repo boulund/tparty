@@ -97,14 +97,17 @@ def count_num_peps(filename):
                 counter += 1
     return counter
 
-def count_disc_peps(filename, rank="species"):
+def count_disc_peps(filename, ranks=("species", "no", "subspecies")):
     """
-    Count the number of discriminative peptides at specified rank.
+    Count the number of discriminative peptides at the specified ranks.
+
+    NOTE: 'no rank' gets split into 'no'. 
     """
+    ranks = set(ranks)
     with open(filename) as f:
         disc_peps = 0
         for line in f:
-            if line.split()[1] == rank:
+            if line.split()[1] in ranks:
                 disc_peps += 1
     return disc_peps
 
