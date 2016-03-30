@@ -4,8 +4,8 @@
 
 # Set important paths and parameters
 # This script expects a working Wine32 prefix in WINEPREFIX
-export READW=/home/boulund/research/TTT/src/ReAdW/bin/ReAdW.201510.xcalibur.exe
-export WINEPREFIX=/home/boulund/research/TTT/wine32/
+export READW=/storage/TTT/bin/ReAdW.201510.xcalibur.exe
+export WINEPREFIX=/storage/TTT/applications/wine32/
 GNU_PARALLEL=/local/bin/parallel
 NUM_CPU=20
 

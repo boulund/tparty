@@ -11,7 +11,7 @@ min_version("3.5")
 
 # Load configuration from YAML config file.
 # The config parameters are stored in global dict 'config'.
-configfile: "/home/boulund/research/TTT/code/TTT_proteotyping_pipeline/TTT_pipeline_snakemake_config.yaml"
+configfile: "/storage/TTT/code/TTT_proteotyping_pipeline/TTT_pipeline_snakemake_config.yaml"
 
 # Set workdir
 workdir: config["workdir"]
