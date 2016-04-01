@@ -28,6 +28,7 @@ onerror:
 
 
 
+
 #####################################################################
 # Define SAMPLES to run on
 #####################################################################
@@ -122,6 +123,8 @@ rule raw2mzxml:
 		config["rawdir"]+"/{sample}.raw"
 	output:
 		config["mzXMLdir"]+"/{sample}.mzXML.gz"
+	resources:
+		io=1
 	shell:
 		"""
 		export READW={config[readw_exe]}
@@ -137,6 +140,8 @@ rule xtandem_bacterial:
 		xmlfile=config["xmldir"]+"/{sample}.bacterial.xml"
 	log:
 		"input_{sample}.xml.log"
+	resources:
+		mem=40
 	threads: 
 		config["xtandem_threads"]
 	shadow:
@@ -178,6 +183,8 @@ rule blat_bacterial:
 		config["fastadir"]+"/{sample}.bacterial.fasta"
 	output:
 		config["blast8dir"]+"/{sample}.bacterial.blast8"
+	resources:
+		mem=25
 	shadow:
 		True
 	shell:
