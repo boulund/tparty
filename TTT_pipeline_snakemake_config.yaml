@@ -1,4 +1,4 @@
-# vi:syntax=yaml
+# vi:syntax=yaml tabstop=4 expandtab
 # coding: utf-8
 #
 # TTT proteotyping workflow snakemake configuration file
