@@ -229,7 +229,7 @@ rule taxonomic_composition:
         config["resultsdir"]+"/{sample}/{sample}.proteotyping.log"
     shell:
         """
-        taxonomic_composition.py {input} \
+        taxonomic_composition {input} \
                 --taxref-db {config[taxref_db]} \
                 --annotation-db {config[annotation_db]} \
                 --blacklist {config[blacklist]} \
@@ -273,7 +273,7 @@ rule determine_resistance:
         config["resultsdir"]+"/{sample}/{sample}.resistance.txt"
     shell:
         """
-        parse_AR_blast8.py \
+        antibiotic_resistance \
             --resfinder {config[resfinder_sqlite3_db]} \
             --min-identity {config[resistance_min_identity]} \
             --keep-going \
