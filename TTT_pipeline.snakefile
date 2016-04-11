@@ -47,6 +47,7 @@ DBTYPES = ["bacterial", "resistance"]
 # these rules will be run on the login node).
 localrules: 
     all, 
+    compress_completed_intermediaries,
     all_proteotyping, 
     all_resistance, 
     all_human,
@@ -58,19 +59,9 @@ localrules:
     bacterial_xml2fasta,
     unique_bacterial_proteins,
     unique_human_proteins,
-    determine_resistance
+    determine_resistance,
+    gzip
 
-
-rule all_compress:
-    input:
-        expand(config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.{filetype}", sample=SAMPLES, filetype=["xlsx", "txt"]),
-        expand(config["resultsdir"]+"/{sample}/{sample}.unique_{dbtaxa}_proteins.txt", sample=SAMPLES, dbtaxa=DBTAXA),
-        expand(config["resultsdir"]+"/{sample}/{sample}.resistance.txt", sample=SAMPLES),
-        expand(config["resultsdir"]+"/{sample}/{sample}.gspread_reported", sample=SAMPLES),
-        expand(config["resultsdir"]+"/{sample}/{sample}.sqlite3.gz", sample=SAMPLES),
-        expand(config["blast8dir"]+"/{sample}.{dbtype}.blast8.gz", sample=SAMPLES, dbtype=DBTYPES),
-        expand(config["fastadir"]+"/{sample}.bacterial.fasta.gz", sample=SAMPLES),
-        expand(config["xmldir"]+"/{sample}.{dbtaxa}.xml.gz", sample=SAMPLES, dbtaxa=DBTAXA)
 
 rule all:
     input:
@@ -78,6 +69,15 @@ rule all:
         expand(config["resultsdir"]+"/{sample}/{sample}.unique_{dbtaxa}_proteins.txt", sample=SAMPLES, dbtaxa=DBTAXA),
         expand(config["resultsdir"]+"/{sample}/{sample}.resistance.txt", sample=SAMPLES),
         expand(config["resultsdir"]+"/{sample}/{sample}.gspread_reported", sample=SAMPLES),
+
+rule compress_completed_intermediaries:
+    """Compress intermediary files. WARNING: Will essentially run all rules to
+    produce the compressed intermediaries."""
+    input:
+        expand(config["resultsdir"]+"/{sample}/{sample}.sqlite3.gz", sample=SAMPLES),
+        expand(config["blast8dir"]+"/{sample}.{dbtype}.blast8.gz", sample=SAMPLES, dbtype=DBTYPES),
+        expand(config["fastadir"]+"/{sample}.bacterial.fasta.gz", sample=SAMPLES),
+        expand(config["xmldir"]+"/{sample}.{dbtaxa}.xml.gz", sample=SAMPLES, dbtaxa=DBTAXA)
 
 rule all_proteotyping:
     input:
@@ -357,6 +357,8 @@ rule gzip:
         "{filename}.gz"
     resources:
         io=1
+    priority:
+        0
     shell:
         """
         gzip {input}
