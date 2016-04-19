@@ -6,15 +6,18 @@
 Welcome to TTT Proteotyping Pipeline's documentation!
 =====================================================
 
+.. image:: img/ttt_proteotyping_pipeline_overview.*
+    :alt: Overview of the workflow.
+    :align: center
+
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
    
-    introduction
-    installation
-    running
-    publications
+   installation
 
 
 

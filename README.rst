@@ -4,7 +4,7 @@ This repository contains the components of "The Tailored Treatment
 Proteotyping Pipeline" for automated proteotyping analysis of samples in `The
 Tailored Treatment`_ project. 
 
-.. image:: img/ttt_proteotyping_pipeline_overview.png
+.. image:: docs/source/img/ttt_proteotyping_pipeline_overview.png
     :alt: Overview of TTT Proteotyping Pipeline.
     :align: center
 
