@@ -2,15 +2,15 @@
 # coding: utf-8
 #
 # Snakemake file for TTT proteotyping analysis workflow
+# NOTE: THIS SNAKEFILE REQUIRES A CONFIGFILE TO SUPPLY 
+#       CONFIGURATION PARAMETERS FOR ALL CALLED PROGRAMS
+#       RUN THIS SNAKEFILE WITH THE --configfile PARAMETER
 # Fredrik Boulund 2016
 
-# Shadow rules were introduced in 3.5
+# Shadow rules are essential for not cluttering the root directory, especially
+# for the X!Tandem and BLAT rules. They were introduced to Snakemake in 3.5.
 from snakemake.utils import min_version
 min_version("3.5")  
-
-# Load configuration from YAML config file.
-# The config parameters are stored in global dict 'config'.
-configfile: "/storage/TTT/code/TTT_proteotyping_pipeline/TTT_pipeline_snakemake_config.yaml"
 
 # Set workdir
 workdir: config["workdir"]
@@ -23,9 +23,6 @@ onerror:
     print("Workflow finished with error(s).")
     print("Check the logfile and fix errors until next workflow invocation.")
     shell("""mail -s "TTT Proteotyping Pipeline: error(s) occured." {config[email]} < {log}""")
-
-
-
 
 
 #####################################################################
@@ -122,7 +119,7 @@ rule upto_unique_bacterial_proteins:
 #####################################################################
 
 #######################################
-## Shared steps
+## Shared rules
 #######################################
 
 rule raw2mzxml:
@@ -177,7 +174,7 @@ rule bacterial_xml2fasta:
         """
 
 #######################################
-## Taxonomic composition determination
+## Taxonomic composition estimation
 #######################################
 
 rule unique_bacterial_proteins:
