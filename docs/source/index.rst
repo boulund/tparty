@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to TTT Proteotyping Pipeline's documentation!
-=====================================================
+TTT Proteotyping Pipeline
+=========================
 
 .. image:: img/ttt_proteotyping_pipeline_overview.*
     :alt: Overview of the workflow.
@@ -18,6 +18,7 @@ Contents:
    :maxdepth: 2
    
    installation
+   running
 
 
 

@@ -36,10 +36,10 @@ see instructions below. Running ReAdW in Wine requires a Linux system with a
 working 32-bit Wine installation. 
 
 .. note:: 
-    It is important that you can run a 32-bit Wine installation, as ReAdW
-    cannot be run under a 64-bit only installation of Wine. As of this writing,
-    32-bit Wine is only available for RedHat Enterprise Linux 6 and below.
-    Support for 32-bit Wine was apparently removed in RHEL 7. 
+    It is important that you use 32-bit Wine, as ReAdW cannot be run under
+    64-bit Wine. As of this writing, 32-bit Wine is only available for RedHat
+    Enterprise Linux 6 and below.  Support for 32-bit Wine was removed in RHEL
+    7. 
 
 
 Get ReAdW
@@ -108,5 +108,4 @@ required input files and run X!Tandem for you. It makes it very easy to use X!Ta
     run_xtandem.py --output OUTFILE --db /PATH/TO/FASTA --threads N --xtandem /PATH/TO/TANDEM.EXE
 
 .. _X!Tandem homepage: http://www.thegpm.org/TANDEM/instructions.html
-
 
