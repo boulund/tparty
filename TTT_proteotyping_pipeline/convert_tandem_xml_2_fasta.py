@@ -41,29 +41,18 @@ def parse_commandline():
 
 
 
-def generate_seqences_from_bioml_xml(xmlfile, first_seq_only=True):
+def generate_seqences_from_bioml_xml(xmlfile):
     """
     Generates sequence entries from X!tandem BIOML XML file.
-
-    first_seq_only  Default True. Returns only the first sequnece 
-                    for each group (spectrum).
     """
 
-    if first_seq_only:
-        for _, element in etree.iterparse(xmlfile):
-            if element.tag == "group":
-                for child in element.iterdescendants("domain"):
-                    yield element.attrib["label"], child.attrib["id"], child.attrib["expect"], child.attrib["seq"]
-                    break
-                continue
-    else:
-        # This generates ALL sequences from all groups (spectra). Not entirely useful.
-        elements = (element for _, element in etree.iterparse(xmlfile))
-        domains = (element for element in elements if element.tag == "domain")
-        seqs = ((domain.attrib["id"], domain.attrib["expect"], domain.attrib["seq"]) for domain in domains)
-        yield seqs
-
-
+    for _, element in etree.iterparse(xmlfile):
+        if element.tag == "group":
+            for child in element.iterdescendants("domain"):
+                yield element.attrib["label"], child.attrib["id"], child.attrib["expect"], child.attrib["seq"]
+                break
+            element.clear()
+            continue
 
 
 def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile):
