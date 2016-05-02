@@ -134,7 +134,7 @@ rule raw2mzxml:
         """
         export READW={config[readw_exe]}
         export WINEPREFIX={config[wineprefix]}
-        wine $READW --centroid --nocompress --gzip {input} {output}
+        wine $READW --nocompress --gzip {input} {output}
         """
 
 rule xtandem_bacterial:
@@ -153,7 +153,7 @@ rule xtandem_bacterial:
         True
     shell:
         """
-        run_xtandem.py \
+        run_parallel_tandem.py \
                 --output {output.xmlfile} \
                 -x {config[xtandem_exe]} \
                 -n {threads} \

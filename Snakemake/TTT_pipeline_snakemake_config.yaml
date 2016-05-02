@@ -72,7 +72,7 @@ wineprefix:
 
 # X! Tandem settings
 xtandem_exe:
-    /storage/TTT/bin/tandem.exe
+    /home/boulund/research/TTT/src/parallel_tandem/src/parallel_tandem_10-12-01-1/bin/tandem.exe
 xtandem_threads:
     11
 
