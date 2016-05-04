@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<bioml label="x! taxon-to-file matching list">
+	<taxon label="bacteria">
+		<file format="peptide" URL="/storage/TTT/reference_data/xtandem_refdb.fasta"/>
+	</taxon>
+	<taxon label="human">
+		<file format="peptide" URL="/storage/TTT/reference_data/human_proteome.fasta"/>
+	</taxon>
+</bioml>

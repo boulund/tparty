@@ -155,9 +155,11 @@ rule xtandem_bacterial:
         """
         run_xtandem.py \
                 --output {output.xmlfile} \
-                -x {config[xtandem_exe]} \
-                -n {threads} \
-                --db {config[xtandem_db]} \
+                --xtandem {config[xtandem_exe]} \
+                --threads {threads} \
+                --taxon bacteria \
+                --taxonomy {config[xtandem_taxonomy]} \
+                --default-parameters {config[xtandem_defaults]} \
                 --loglevel {config[loglevel]} \
                 {input}
         """
@@ -299,9 +301,11 @@ rule xtandem_human:
         """
         run_xtandem.py \
             --output {output.xmlfile} \
-            -x {config[xtandem_exe]} \
-            -n {threads} \
-            --db {config[human_proteome]} \
+            --xtandem {config[xtandem_exe]} \
+            --threads {threads} \
+            --taxon human \
+            --taxonomy {config[xtandem_taxonomy} \
+            --default-parameters {config[xtandem_defaults]} \
             --loglevel {config[loglevel]} \
             {input}
         """

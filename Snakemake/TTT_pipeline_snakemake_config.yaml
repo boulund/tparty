@@ -73,6 +73,10 @@ wineprefix:
 # X! Tandem settings
 xtandem_exe:
     /storage/TTT/bin/tandem.exe
+xtandem_defaults:
+    /storage/TTT/reference_data/default_parameters.xml
+xtandem_taxonomy:
+    /storage/TTT/reference_data/taxonomy.xml
 xtandem_threads:
     11
 
