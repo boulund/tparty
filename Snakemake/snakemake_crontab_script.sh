@@ -1,6 +1,7 @@
 #!/bin/bash
 # Snakemake crontab script
 # Fredrik Boulund 2016
+export TMPDIR=/storage/TTT/.tmpdir
 
 # The number of cores to run processes on. Some rules in the snakefile consume
 # several threads. The maximum number of concurrent processes are limited by
