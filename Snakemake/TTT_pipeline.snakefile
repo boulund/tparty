@@ -208,6 +208,7 @@ rule blat_bacterial:
             -q=prot \
             -tileSize=5 \
             -stepSize=5 \
+            -minScore=10 \
             -minIdentity=90 \
             {output}
         """
