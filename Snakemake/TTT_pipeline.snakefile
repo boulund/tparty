@@ -305,7 +305,7 @@ rule xtandem_human:
             --xtandem {config[xtandem_exe]} \
             --threads {threads} \
             --taxon human \
-            --taxonomy {config[xtandem_taxonomy} \
+            --taxonomy {config[xtandem_taxonomy]} \
             --default-parameters {config[xtandem_defaults]} \
             --loglevel {config[loglevel]} \
             {input}
