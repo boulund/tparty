@@ -130,6 +130,8 @@ rule raw2mzxml:
         config["mzXMLdir"]+"/{sample}.mzXML.gz"
     resources:
         io=1
+    version: 
+        "1.0"
     shell:
         """
         export READW={config[readw_exe]}
@@ -151,6 +153,8 @@ rule xtandem_bacterial:
         config["xtandem_threads"]
     shadow:
         True
+    version: 
+        "1.0"
     shell:
         """
         run_xtandem.py \
@@ -170,6 +174,8 @@ rule bacterial_xml2fasta:
         config["xmldir"]+"/{sample}.bacterial.xml"
     output:
         config["fastadir"]+"/{sample}.bacterial.fasta"
+    version: 
+        "1.0"
     shell:
         """
         convert_tandem_xml_2_fasta.py {input} --outfile {output}
@@ -185,6 +191,8 @@ rule unique_bacterial_proteins:
         config["xmldir"]+"/{sample}.bacterial.xml"
     output:
         config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt"
+    version:
+        "1.0"
     shell:
         """
         create_unique_protein_list.py -o {output} {input}
@@ -200,6 +208,8 @@ rule blat_bacterial:
         mem=25
     shadow:
         True
+    version:
+        "1.0"
     shell:
         """
         blat \
@@ -227,6 +237,8 @@ rule taxonomic_composition:
         discpeps=config["resultsdir"]+"/{sample}/{sample}.discriminative_peptides.txt"
     log:
         config["resultsdir"]+"/{sample}/{sample}.proteotyping.log"
+    version:
+        "1.0"
     shell:
         """
         taxonomic_composition {input} \
@@ -254,6 +266,8 @@ rule blat_resistance:
         config["blast8dir"]+"/{sample}.resistance.blast8"
     shadow:
         True
+    version:
+        "1.0"
     shell:
         """
         blat \
@@ -271,6 +285,8 @@ rule determine_resistance:
         config["blast8dir"]+"/{sample}.resistance.blast8"
     output:
         config["resultsdir"]+"/{sample}/{sample}.resistance.txt"
+    version:
+        "1.0"
     shell:
         """
         antibiotic_resistance \
@@ -298,6 +314,8 @@ rule xtandem_human:
         config["xtandem_threads"]
     shadow:
         True
+    version:
+        "1.0"
     shell:
         """
         run_xtandem.py \
@@ -317,6 +335,8 @@ rule unique_human_proteins:
         config["xmldir"]+"/{sample}.human.xml"
     output:
         config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt"
+    version:
+        "1.0"
     shell:
         """
         create_unique_protein_list.py -o {output} {input}
@@ -338,6 +358,8 @@ rule gspread_report:
         config["resultsdir"]+"/{sample}/{sample}.gspread_reported"
     log:
         config["resultsdir"]+"/{sample}/{sample}.gspread_report.log"
+    version:
+        "1.0"
     shell:
         """
         gspread_report.py \
@@ -361,6 +383,8 @@ rule gzip:
         io=1
     priority:
         0
+    version:
+        "1.0"
     shell:
         """
         gzip {input}
