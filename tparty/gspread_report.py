@@ -21,13 +21,16 @@
 
 from sys import argv, exit
 from os.path import getmtime
+from os import listdir
 from datetime import datetime
 from collections import namedtuple
 from oauth2client.client import SignedJwtAssertionCredentials
+import platform
 import logging
 import argparse
 import gspread
 import json
+import sqlite3
 
 
 def parse_commandline(argv):
@@ -47,7 +50,7 @@ def parse_commandline(argv):
             nargs="+",
             help="Proteomics ID (PID) / sample name to report.")
     parser.add_argument("--tokenfile",
-            default="/storage/TTT/code/TTT_proteotyping_pipeline/google_token.json",
+            default="/storage/TTT/code/google_token.json",
             required=True,
             metavar="TOKENFILE",
             help="Path to OAuth2 authentication token file.")
@@ -66,6 +69,10 @@ def parse_commandline(argv):
         exit()
     
     options = parser.parse_args()
+    
+    logging.info("Running with the following settings:")
+    for option, value in vars(options).items():
+        logging.info("%s\t%s", option, value)
 
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -128,34 +135,55 @@ def count_disc_peps(filename, ranks=("species", "no", "subspecies")):
 
 def get_summary_results(pid):
     """
-    Retrieve summary results for Google Docs spreadsheet.
+    Compile summary results for Google Docs spreadsheet.
 
     Assumes workdir is the TTT proteotyping pipeline base dir,
     with output files in the following folders:
-    ./3.fasta/
-    ./5.results/<pid>/
+    ./3.fasta/<pid>.<xtandem_db>.fasta
+    ./5.results/<pid>/<xtandem_db>/<pid>.taxonomic_composition.txt
+                                   <pid>.unique_bacterial_proteins.txt
+                                   <pid>.unique_human_proteins.txt
+                                   <pid>.discriminative_peptides.txt
 
     Returns a namedtuple with the following fields:
       pid
-      bacterial_proteins
+      hostname
+      xtandem_db
+      genome_db
+      taxref_db
+      unique_proteins
       human_proteins
-      num_peps
+      peptides,
       disc_peps
       completion_date
     """ 
 
-    Results = namedtuple("Results", ["pid", "bacterial_proteins", 
-            "human_proteins", "num_peps", "disc_peps", "completion_date"])
+    Results = namedtuple("Results", 
+            ["pid", 
+             "hostname", 
+             "xtandem_db",
+             "genome_db",
+             "taxref_db",
+             "unique_proteins", 
+             "human_proteins",
+             "peptides",
+             "disc_peps",
+             "completion_date"])
 
+    # Construct the paths to all the required files
     resultsdir_base = "5.results/"+pid+"/"+pid
     taxcomp_filename = resultsdir_base + ".taxonomic_composition.txt"
-    bacterial_proteins_filename = resultsdir_base + ".unique_bacterial_proteins.txt"
+    unique_proteins_filename = resultsdir_base + ".unique_bacterial_proteins.txt"
     human_proteins_filename = resultsdir_base + ".unique_human_proteins.txt"
     disc_peps_filename = resultsdir_base + ".discriminative_peptides.txt"
     num_peps_filename = "3.fasta/" + pid + ".bacterial.fasta"
 
-    bacterial_proteins = get_count_proteins(bacterial_proteins_filename)
-    logging.debug("Got %s bacterial proteins from %s", bacterial_proteins, bacterial_proteins_filename)
+    # Use all the filenames to retrieve the relevanta data
+    hostname = platform.node()
+    logging.debug("Got hostname %s", hostname)
+
+    unique_proteins = get_count_proteins(unique_proteins_filename)
+    logging.debug("Got %s bacterial proteins from %s", unique_proteins, unique_proteins_filename)
 
     human_proteins = get_count_proteins(human_proteins_filename)
     logging.debug("Got %s human proteins from %s", human_proteins, human_proteins_filename)
@@ -169,20 +197,62 @@ def get_summary_results(pid):
     completion_date = datetime.fromtimestamp(getmtime(taxcomp_filename))
     logging.debug("Got completion date %s for %s", completion_date, taxcomp_filename)
 
-    results = Results(pid, bacterial_proteins, human_proteins, num_peps, disc_peps, completion_date)
+
+    results = Results(pid, 
+            hostname,
+            "", #xtandem_db
+            "", #genome_db
+            "", #taxref_db
+            unique_proteins, 
+            human_proteins, 
+            num_peps, 
+            disc_peps,
+            completion_date
+            )
     return results
 
 
-def report_to_gdoc(results, tokenfile, spreadsheet="TTT proteotyping pipeline results"):
+class Samples_DB():
     """
-    Upload TTT proteotyping pipeline results to Google Docs spreadsheet.
-    
-    Connects to Google docs using the 'gspread' Python package. 
-    Authentication via OAuth2 credentials from Google Developers Console.
+    Simple wrapper over an SQLite3 in-memory database to store the sample DB from Gdoc.
+    """
 
-    Relies on some hardcoded column names.
+    def __init__(self):
+        con = sqlite3.connect(":memory:")
+        self.db = con
+        create_table_samples = """CREATE TABLE samples(
+            eu int,
+            project text,
+            pid text,
+            pnotes text,
+            species text,
+            mixratio text,
+            notes text)
+        """
+        self.db.execute(create_table_samples)
+
+    def fill_samples_table(self, values):
+        self.db.executemany("INSERT INTO samples VALUES (?,?,?,?,?,?,?)", values)
+        self.db.commit()
+
+    def get_samples(self):
+        result = self.db.execute("SELECT * FROM samples")
+        return result.fetchall()
+
+    def __getitem__(self, key):
+        """Overloaded to retrieve rows from the DB using QE-number as key."""
+        result = self.db.execute("SELECT * FROM samples WHERE pid = ?", (key,)).fetchone()
+        if result is None:
+            raise KeyError(key)
+        return result
+
+
+def read_samples_db_from_gdoc(tokenfile, spreadsheet="TTT proteotyping pipeline results"):
     """
-    
+    Read the samples database from Google Docs spreadsheet.
+
+    It expects to find it in the "Samples" sheet.
+    """
     json_key = json.load(open(options.tokenfile))
     scope = ["https://spreadsheets.google.com/feeds"]
 
@@ -192,36 +262,48 @@ def report_to_gdoc(results, tokenfile, spreadsheet="TTT proteotyping pipeline re
                                                 json_key['private_key'].encode(), 
                                                 scope)
     gc = gspread.authorize(credentials)
-    wks = gc.open(spreadsheet).sheet1
+    wks = gc.open(spreadsheet).worksheet("Samples")
 
-    # Define the numerical indices to columns in the spreadsheet
-    columns = {"EU": 1, 
-               "PID": 2, 
-               "Proteomics Notes": 3, 
-               "Species": 4, 
-               "Bacterial proteins": 5, 
-               "Human proteins": 6, 
-               "Identified spectra/peptides": 7, 
-               "Discriminative peptides (species)": 8, 
-               "Completion date": 9,
-               "Mixing Ratio": 10, 
-               "Notes": 11}
+    list_of_lists = wks.get_all_values()
+    samples_db = Samples_DB()
+    samples_db.fill_samples_table(list_of_lists)
+    return samples_db
 
-    for pid in results:
-        try:
-            pid_cell = wks.find(pid.pid)
-        except gspread.exceptions.CellNotFound:
-            logging.warning("Could not find cell for PID: %s", pid.pid)
-            continue
-        row = pid_cell.row
-        wks.update_cell(row, columns["Bacterial proteins"], pid.bacterial_proteins)
-        wks.update_cell(row, columns["Human proteins"], pid.human_proteins)
-        wks.update_cell(row, columns["Identified spectra/peptides"], pid.num_peps)
-        wks.update_cell(row, columns["Discriminative peptides (species)"], pid.disc_peps)
-        wks.update_cell(row, columns["Completion date"], pid.completion_date)
+
+def report_to_gdoc_r3(results, sample_db, tokenfile, spreadsheet="TTT proteotyping pipeline results"):
+    """
+    Upload TTT proteotyping pipeline results to Google Docs spreadsheet.
+    
+    Connects to Google docs using the 'gspread' Python package. 
+    Authentication via OAuth2 credentials from Google Developers Console.
+    """
+    json_key = json.load(open(options.tokenfile))
+    scope = ["https://spreadsheets.google.com/feeds"]
+
+    logging.debug("Signing in to Google account %s\n  with credentials from %s", 
+            json_key["client_email"], options.tokenfile)
+    credentials = SignedJwtAssertionCredentials(json_key['client_email'], 
+                                                json_key['private_key'].encode(), 
+                                                scope)
+    gc = gspread.authorize(credentials)
+    wks = gc.open(spreadsheet).worksheet("TPARTY results")
+
+    #results = [("EUNUM", "QENUM", "PROJECT", "SPECIES", "HOSTNAME", "XTANDEMDB", "GNEOMEDB", "TAXREFDB", "UNIQUE", "HUMANPROT", "PEPTIDES", "DISC", "COMPLETED")]
+    for result in results:
+        sample_info = sample_db[result.pid]
+        eu = sample_info[0]
+        project = sample_info[1]
+        qe = sample_info[2]
+        species = sample_info[4]
+        row = [eu, project, qe, species]
+        row.extend(result[1:])
+        wks.append_row(row)
 
 
 if __name__ == "__main__":
     options = parse_commandline(argv)
+
     results = [get_summary_results(pid) for pid in options.PID]
-    report_to_gdoc(results, options.tokenfile)
+
+    samples_db = read_samples_db_from_gdoc(options.tokenfile)
+    report_to_gdoc_r3(results, samples_db, options.tokenfile)
