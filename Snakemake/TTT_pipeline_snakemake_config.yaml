@@ -41,8 +41,6 @@ workdir:
 #####################################################################
 # Pipeline reference data  (absolute paths)
 #####################################################################
-xtandem_db:
-    /storage/TTT/reference_data/xtandem_refdb.fasta
 blat_genome_db:
     /storage/TTT/reference_data/reference_genomes.fasta
 taxref_db:
