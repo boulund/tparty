@@ -70,6 +70,9 @@ def parse_commandline():
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
             default="/storage/TTT/bin/tandem.exe",
             help="Path to X!Tandem executable [%(default)s].")
+    parser.add_argument("--logfile", metavar="LOGFILE",
+            default="",
+            help="Log to LOGFILE instead of STDOUT.")
     parser.add_argument("--loglevel", 
             choices=["INFO","DEBUG"],
             default="DEBUG",
@@ -80,7 +83,16 @@ def parse_commandline():
         exit()
 
     options = parser.parse_args()
-    logging.basicConfig(level=options.loglevel, format='%(asctime)s %(levelname)s: %(message)s')
+    logging_format = "%(asctime)s %(levelname)s: %(message)s"
+    if options.logfile:
+        logging.basicConfig(level=options.loglevel, filename=options.logfile, format=logging_format)
+    else:
+        logging.basicConfig(level=options.loglevel, format=logging_format)
+
+    logging.info("Running with the following settings:")
+    for option, value in vars(options).items():
+        logging.info("SETTING: %s\t%s", option, value)
+
     return options
 
 

@@ -37,6 +37,9 @@ loglevel:
 # The TTT proteotyping workflow workdir.
 workdir:
     /storage/TTT/
+# Path to where this configfile is stored, much meta!
+configfile:
+    /storage/TTT/TTT_pipeline_snakemake_config.yaml
 
 #####################################################################
 # Pipeline reference data  (absolute paths)
