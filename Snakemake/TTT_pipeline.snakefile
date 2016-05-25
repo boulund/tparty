@@ -381,6 +381,7 @@ rule gspread_report:
         """
         gspread_report.py \
                 --tokenfile {config[google_token]} \
+                --snakemake-configfile {config[configfile]) \
                 --logfile {log} \
                 {wildcards.sample}
         touch {output}
