@@ -25,6 +25,7 @@ from os import listdir
 from datetime import datetime
 from collections import namedtuple
 from oauth2client.client import SignedJwtAssertionCredentials
+import yaml
 import platform
 import logging
 import argparse
@@ -49,11 +50,14 @@ def parse_commandline(argv):
     parser.add_argument("PID", 
             nargs="+",
             help="Proteomics ID (PID) / sample name to report.")
-    parser.add_argument("--tokenfile",
+    parser.add_argument("-t", "--tokenfile", dest="tokenfile",
             default="/storage/TTT/code/google_token.json",
             required=True,
             metavar="TOKENFILE",
             help="Path to OAuth2 authentication token file.")
+    parser.add_argument("-s", "--snakemake-configfile", dest="snakemake_configfile",
+            required=True,
+            help="Path to Snakemake configfile.")
     parser.add_argument("--loglevel", 
             dest="loglevel",
             default="INFO",
@@ -93,6 +97,64 @@ def parse_commandline(argv):
 
     return options
 
+
+def get_xtandem_db_version(xtandem_db):
+    """
+    Get X!Tandem db version (date).
+    """
+
+    modification_date = datetime.fromtimestamp(getmtime(xtandem_db)).strftime("%Y-%m-%d")
+    return modification_date
+
+
+def get_genome_db_version(genome_db):
+    """
+    Get genome db version (date).
+    """
+
+    modification_date = datetime.fromtimestamp((getmtime(genome_db))).strftime("%Y-%m-%d")
+    return modification_date
+
+
+def get_taxref_db_version(taxref_db):
+    """
+    Get taxref db version (from SQL database comment), and number of refseqs.
+    """
+
+    db = sqlite3.connect(taxref_db)
+    version = db.execute("SELECT * FROM version").fetchone()[0]
+    refseqs = db.execute("SELECT Count(*) FROM refseqs").fetchone()[0]
+    return (version, refseqs)
+
+
+def get_annotation_db_version(annotation_db):
+    """
+    Get annotation db version (modification date and number of annotations from SQL database).
+    """
+
+    db = sqlite3.connect(annotation_db)
+    modification_date = datetime.fromtimestamp((getmtime(annotation_db))).strftime("%Y-%m-%d")
+    annotations = db.execute("SELECT Count(*) FROM annotations").fetchone()[0]
+    return (modification_date, annotations)
+
+
+
+def get_database_versions(snakemake_configfile):
+    """
+    Parse Snakemake YAML configfile and query database files for their versions.
+
+    Returns a tuple:
+        (xtandem_db_version, genome_db_version, taxref_db_version, annotation_db_version)
+    """
+
+    snakemake_config = yaml.load(open(snakemake_configfile))
+
+    xtandem_db_version = get_xtandem_db_version(snakemake_config["xtandem_db"])
+    genome_db_version =  get_genome_db_version(snakemake_config["blat_genome_db"])
+    taxref_db_version = get_taxref_db_version(snakemake_config["taxref_db"])
+    annotation_db_version = get_annotation_db_version(snakemake_config["annotation_db"])
+
+    return (xtandem_db_version, genome_db_version, taxref_db_version, annotation_db_version)
 
 
 def get_count_proteins(filename):
@@ -139,18 +201,14 @@ def get_summary_results(pid):
 
     Assumes workdir is the TTT proteotyping pipeline base dir,
     with output files in the following folders:
-    ./3.fasta/<pid>.<xtandem_db>.fasta
-    ./5.results/<pid>/<xtandem_db>/<pid>.taxonomic_composition.txt
-                                   <pid>.unique_bacterial_proteins.txt
-                                   <pid>.unique_human_proteins.txt
-                                   <pid>.discriminative_peptides.txt
+    ./3.fasta/
+    ./5.results/<pid>/<pid>.taxonomic_composition.txt
+                      <pid>.unique_bacterial_proteins.txt
+                      <pid>.unique_human_proteins.txt
+                      <pid>.discriminative_peptides.txt
 
     Returns a namedtuple with the following fields:
       pid
-      hostname
-      xtandem_db
-      genome_db
-      taxref_db
       unique_proteins
       human_proteins
       peptides,
@@ -160,10 +218,6 @@ def get_summary_results(pid):
 
     Results = namedtuple("Results", 
             ["pid", 
-             "hostname", 
-             "xtandem_db",
-             "genome_db",
-             "taxref_db",
              "unique_proteins", 
              "human_proteins",
              "peptides",
@@ -179,8 +233,6 @@ def get_summary_results(pid):
     num_peps_filename = "3.fasta/" + pid + ".bacterial.fasta"
 
     # Use all the filenames to retrieve the relevanta data
-    hostname = platform.node()
-    logging.debug("Got hostname %s", hostname)
 
     unique_proteins = get_count_proteins(unique_proteins_filename)
     logging.debug("Got %s bacterial proteins from %s", unique_proteins, unique_proteins_filename)
@@ -194,15 +246,11 @@ def get_summary_results(pid):
     disc_peps = count_disc_peps(resultsdir_base+".discriminative_peptides.txt")
     logging.debug("Got %s discriminative peptides from %s", disc_peps, disc_peps_filename)
 
-    completion_date = datetime.fromtimestamp(getmtime(taxcomp_filename))
+    completion_date = datetime.fromtimestamp(getmtime(taxcomp_filename)).strftime("%Y-%m-%d")
     logging.debug("Got completion date %s for %s", completion_date, taxcomp_filename)
 
 
     results = Results(pid, 
-            hostname,
-            "", #xtandem_db
-            "", #genome_db
-            "", #taxref_db
             unique_proteins, 
             human_proteins, 
             num_peps, 
@@ -270,7 +318,7 @@ def read_samples_db_from_gdoc(tokenfile, spreadsheet="TTT proteotyping pipeline 
     return samples_db
 
 
-def report_to_gdoc_r3(results, sample_db, tokenfile, spreadsheet="TTT proteotyping pipeline results"):
+def report_to_gdoc_r3(results, sample_db, db_versions, tokenfile, spreadsheet="TTT proteotyping pipeline results"):
     """
     Upload TTT proteotyping pipeline results to Google Docs spreadsheet.
     
@@ -288,6 +336,9 @@ def report_to_gdoc_r3(results, sample_db, tokenfile, spreadsheet="TTT proteotypi
     gc = gspread.authorize(credentials)
     wks = gc.open(spreadsheet).worksheet("TPARTY results")
 
+    hostname = platform.node().split(".")[0]
+    logging.debug("Got hostname %s", hostname)
+
     #results = [("EUNUM", "QENUM", "PROJECT", "SPECIES", "HOSTNAME", "XTANDEMDB", "GNEOMEDB", "TAXREFDB", "UNIQUE", "HUMANPROT", "PEPTIDES", "DISC", "COMPLETED")]
     for result in results:
         sample_info = sample_db[result.pid]
@@ -295,7 +346,8 @@ def report_to_gdoc_r3(results, sample_db, tokenfile, spreadsheet="TTT proteotypi
         project = sample_info[1]
         qe = sample_info[2]
         species = sample_info[4]
-        row = [eu, project, qe, species]
+        row = [eu, project, qe, species, hostname]
+        row.extend(db_versions)
         row.extend(result[1:])
         wks.append_row(row)
 
@@ -306,4 +358,5 @@ if __name__ == "__main__":
     results = [get_summary_results(pid) for pid in options.PID]
 
     samples_db = read_samples_db_from_gdoc(options.tokenfile)
-    report_to_gdoc_r3(results, samples_db, options.tokenfile)
+    db_versions = get_database_versions(options.snakemake_configfile)
+    report_to_gdoc_r3(results, samples_db, db_versions, options.tokenfile)
