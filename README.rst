@@ -23,7 +23,7 @@ About
 
 This is the README file for `TTT Proteotyping Pipeline`. Refer to the 
 `online documentation`_ for instructions on how to use it. The code for
-the project is published as open-source under the BSD license and you are welcome
+the project is published as open-source under the ISC license and you are welcome
 to look at, suggest improvements, or download and improve/contribute to the code
 via the project's Bitbucket_ page.
 
