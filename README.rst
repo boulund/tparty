@@ -19,7 +19,7 @@ About
 *****
 :Authors: Fredrik Boulund
 :Contact: fredrik.boulund@chalmers.se
-:License: BSD
+:License: ISC
 
 This is the README file for `TTT Proteotyping Pipeline`. Refer to the 
 `online documentation`_ for instructions on how to use it. The code for
@@ -72,4 +72,3 @@ and
 | **DOI**: http://dx.doi.org/10.1016/j.syapm.2015.03.006
 | http://www.sciencedirect.com/science/article/pii/S0723202015000491
 | Keywords: Proteotyping; Proteomics; Mass spectrometry; Microbial systematics
-
