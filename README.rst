@@ -1,8 +1,8 @@
 TTT proteotyping pipeline
 =========================
 This repository contains the components of "The Tailored Treatment
-Proteotyping Pipeline" for automated proteotyping analysis of samples in `The
-Tailored Treatment`_ project. 
+Proteotyping Pipeline", TPARTY, for automated proteotyping analysis of 
+samples in `The Tailored Treatment`_ project. 
 
 .. image:: docs/source/img/ttt_proteotyping_pipeline_overview.png
     :alt: Overview of TTT Proteotyping Pipeline.
@@ -21,14 +21,14 @@ About
 :Contact: fredrik.boulund@chalmers.se
 :License: ISC
 
-This is the README file for `TTT Proteotyping Pipeline`. Refer to the 
-`online documentation`_ for instructions on how to use it. The code for
-the project is published as open-source under the ISC license and you are welcome
-to look at, suggest improvements, or download and improve/contribute to the code
-via the project's Bitbucket_ page.
+This is the README file for the `TTT Proteotyping Pipeline`, called TPARTY. 
+Refer to the `online documentation`_ for instructions on how to use it. 
+The code for the project is published as open-source under the ISC license 
+and you are welcome to look at, suggest improvements, or download and 
+improve/contribute to the code via the project's Bitbucket_ page.
 
-.. _online documentation: http://ttt_proteotyping_pipeline.readthedocs.org
-.. _Bitbucket: https://bitbucket.org/chalmersmathbioinformatics/TTT_proteotyping_pipeline
+.. _online documentation: http://tparty.readthedocs.org
+.. _Bitbucket: https://bitbucket.org/chalmersmathbioinformatics/tparty
 
 
 Installation
@@ -48,9 +48,9 @@ notably:
   * ReAdW (raw to mzXML conversion)
   * X!Tandem mass-spectrometry search engine (mzXML to peptides)
   * BLAT (sequence alignment)
-  * `Proteotyping`_
+  * `TCUP`_
 
-.. _Proteotyping: https://bitbucket.org/chalmersmathbioinformatics/proteotyping
+.. _TCUP: https://bitbucket.org/chalmersmathbioinformatics/tcup
 
 
 Citing
