@@ -38,7 +38,7 @@ documentation`_.
 
 Clone the repository to obtain a copy of the code and scripts::
 
-    $ hg clone https://bitbucket.org/chalmersmathbioinformatics/TTT_proteotyping_pipeline
+    $ hg clone https://bitbucket.org/chalmersmathbioinformatics/tparty
 
 Dependencies
 ------------
