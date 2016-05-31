@@ -32,7 +32,7 @@ google_token:
 # Global log level for all called scripts supporting different loglevels.
 # Normally accepts DEBUG or INFO.
 loglevel:
-    DEBUG
+    INFO
 
 # The TTT proteotyping workflow workdir.
 workdir:
@@ -45,7 +45,8 @@ configfile:
 # Pipeline reference data  (absolute paths)
 #####################################################################
 blat_genome_db:
-    /storage/TTT/reference_data/reference_genomes.fasta
+    - /storage/TTT/reference_data/reference_genomes_01.fasta
+    - /storage/TTT/reference_data/reference_genomes_02.fasta
 taxref_db:
     /storage/TTT/reference_data/taxref.sqlite3
 annotation_db:

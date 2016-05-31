@@ -222,15 +222,15 @@ rule blat_bacterial:
     output:
         config["blast8dir"]+"/{sample}.bacterial.blast8"
     resources:
-        mem=25
+        mem=50
     shadow:
         True
     version:
-        "1.0"
+        "1.1"
     shell:
         """
-        blat \
-            {config[blat_genome_db]} \
+        flock .blat_running blat \
+            {config[blat_genome_db][0]} \
             {input} \
             -out=blast8 \
             -t=dnax \
@@ -239,7 +239,20 @@ rule blat_bacterial:
             -stepSize=5 \
             -minScore=10 \
             -minIdentity=90 \
-            {output}
+            {output}_01 &
+        blat \
+            {config[blat_genome_db][1]} \
+            {input} \
+            -out=blast8 \
+            -t=dnax \
+            -q=prot \
+            -tileSize=5 \
+            -stepSize=5 \
+            -minScore=10 \
+            -minIdentity=90 \
+            {output}_02
+        flock .blat_running cat {output}_01 {output}_02 > {output}
+        rm -fv {output}_01 {output}_02
         """
 
 rule taxonomic_composition:
@@ -376,14 +389,15 @@ rule gspread_report:
     log:
         config["resultsdir"]+"/{sample}/{sample}.gspread_report.log"
     version:
-        "1.0"
+        "1.1"
     shell:
         """
         gspread_report.py \
                 --tokenfile {config[google_token]} \
-                --snakemake-configfile {config[configfile]) \
+                --snakemake-configfile {config[configfile]} \
                 --logfile {log} \
-                {wildcards.sample}
+                {wildcards.sample} \
+        && \
         touch {output}
         """
 

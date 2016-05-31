@@ -25,6 +25,7 @@ from os import listdir
 from datetime import datetime
 from collections import namedtuple
 from oauth2client.client import SignedJwtAssertionCredentials
+from xml.etree import ElementTree
 import yaml
 import platform
 import logging
@@ -98,11 +99,14 @@ def parse_commandline(argv):
     return options
 
 
-def get_xtandem_db_version(xtandem_db):
+
+def get_xtandem_db_version(xmlfile, taxon="bacteria"):
     """
     Get X!Tandem db version (date).
     """
-
+    tree = ElementTree.parse(xmlfile)
+    root = tree.getroot()
+    xtandem_db = root.findall("taxon[@label='{taxon}']/file".format(taxon=taxon))[0].attrib["URL"]
     modification_date = datetime.fromtimestamp(getmtime(xtandem_db)).strftime("%Y-%m-%d")
     return modification_date
 
@@ -149,8 +153,8 @@ def get_database_versions(snakemake_configfile):
 
     snakemake_config = yaml.load(open(snakemake_configfile))
 
-    xtandem_db_version = get_xtandem_db_version(snakemake_config["xtandem_db"])
-    genome_db_version =  get_genome_db_version(snakemake_config["blat_genome_db"])
+    xtandem_db_version = get_xtandem_db_version(snakemake_config["xtandem_taxonomy"])
+    genome_db_version =  get_genome_db_version(snakemake_config["blat_genome_db"][0])
     taxref_db_version = get_taxref_db_version(snakemake_config["taxref_db"])
     annotation_db_version = get_annotation_db_version(snakemake_config["annotation_db"])
 
@@ -341,7 +345,12 @@ def report_to_gdoc_r3(results, sample_db, db_versions, tokenfile, spreadsheet="T
 
     #results = [("EUNUM", "QENUM", "PROJECT", "SPECIES", "HOSTNAME", "XTANDEMDB", "GNEOMEDB", "TAXREFDB", "UNIQUE", "HUMANPROT", "PEPTIDES", "DISC", "COMPLETED")]
     for result in results:
-        sample_info = sample_db[result.pid]
+        try:
+            sample_info = sample_db[result.pid]
+        except KeyError:
+            logging.error("Found no info for %s in sample_db, is information about the sample entered in Gdoc??", result.pid)
+            exit(1)
+            continue
         eu = sample_info[0]
         project = sample_info[1]
         qe = sample_info[2]
