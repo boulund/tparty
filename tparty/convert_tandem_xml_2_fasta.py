@@ -61,12 +61,14 @@ def parse_commandline():
 def generate_seqences_from_bioml_xml(xmlfile):
     """
     Generates sequence entries from X!tandem BIOML XML file.
+
+    Only returns the first peptide for each spectrum. 
     """
 
     for _, element in etree.iterparse(xmlfile):
         if element.tag == "group":
             for child in element.iterdescendants("domain"):
-                yield element.attrib["label"], child.attrib["id"], child.attrib["expect"], child.attrib["seq"]
+                yield element.attrib["label"], child.attrib["id"], child.attrib["expect"], child.attrib["hyperscore"], child.attrib["seq"]
                 break
             element.clear()
             continue
@@ -88,10 +90,10 @@ def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile):
     sourceheaders = set()
     write_counter = 0
     with open(outfilename, 'w') as fastafile:
-        for sourceheader, identity, expect, sequence in generate_seqences_from_bioml_xml(xmlfile):
+        for sourceheader, identity, expect, hyperscore, sequence in generate_seqences_from_bioml_xml(xmlfile):
             sourceheaders.add(sourceheader)
-            logging.debug("Writing seq %s with length %s, expect %s.", identity, sequence, expect)
-            header = ">{}:{}_{}".format(identity, expect, len(sequence))
+            logging.debug("Writing seq %s with length %s, expect %s, hyperscore %s.", identity, sequence, expect, hyperscore)
+            header = ">{}_{} expect={} hyperscore={}".format(identity, len(sequence), expect, hyperscore )
             fastafile.write("{}\n{}\n".format(header, sequence))
             write_counter += 1
     logging.info("Wrote %s peptide fragments from %s unique protein sequences to %s", write_counter, len(sourceheaders), outfilename)
