@@ -36,12 +36,21 @@ def parse_commandline():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("FILE", type=str, nargs="+",
         help="Filename of output XML file to convert to FASTA")
-    parser.add_argument("-d", "--outdir", dest="outdir", metavar="DIR", type=str,
+    parser.add_argument("-d", "--outdir", dest="outdir", metavar="DIR", 
+        type=str,
         default="fasta",
         help="Output directory [%(default)s].")
     parser.add_argument("-o", "--outfile", dest="outfile", metavar="FILE", 
         default="",
         help="Output filename. If specified only one file is expected and outdir is disregarded.")
+    parser.add_argument("-H", "--min-hyperscore", dest="min_hyperscore", metavar="H",
+        type=float,
+        default=0.0,
+        help="Minimum hyperscore value [%(default)s].")
+    parser.add_argument("-e", "--max-evalue", dest="max_evalue", metavar="e", 
+        type=float,
+        default=1e15,
+        help="Maximum e-value [%(default)s].")
     parser.add_argument("--loglevel", 
         choices=["INFO", "DEBUG"],
         default="INFO",
@@ -61,18 +70,24 @@ def parse_commandline():
 def generate_seqences_from_bioml_xml(xmlfile):
     """
     Generates sequence entries from X!tandem BIOML XML file.
+
+    Only returns the first peptide for each spectrum. 
     """
 
     for _, element in etree.iterparse(xmlfile):
         if element.tag == "group":
             for child in element.iterdescendants("domain"):
-                yield element.attrib["label"], child.attrib["id"], child.attrib["expect"], child.attrib["seq"]
+                yield (element.attrib["label"], 
+                       child.attrib["id"], 
+                       child.attrib["expect"], 
+                       child.attrib["hyperscore"], 
+                       child.attrib["seq"])
                 break
             element.clear()
             continue
 
 
-def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile):
+def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile, min_hyperscore, max_evalue):
     """
     Converts X!tandem output BIOML XML to FASTA, writes to file in outdir.
     """
@@ -88,14 +103,14 @@ def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile):
     sourceheaders = set()
     write_counter = 0
     with open(outfilename, 'w') as fastafile:
-        for sourceheader, identity, expect, sequence in generate_seqences_from_bioml_xml(xmlfile):
-            sourceheaders.add(sourceheader)
-            logging.debug("Writing seq %s with length %s, expect %s.", identity, sequence, expect)
-            header = ">{}:{}_{}".format(identity, expect, len(sequence))
-            fastafile.write("{}\n{}\n".format(header, sequence))
-            write_counter += 1
+        for sourceheader, identity, expect, hyperscore, sequence in generate_seqences_from_bioml_xml(xmlfile):
+            if float(expect) <= max_evalue and float(hyperscore) >= min_hyperscore:
+                sourceheaders.add(sourceheader)
+                logging.debug("Writing seq %s with length %s, expect %s, hyperscore %s.", identity, sequence, expect, hyperscore)
+                header = ">{}_{} expect={} hyperscore={}".format(identity, len(sequence), expect, hyperscore )
+                fastafile.write("{}\n{}\n".format(header, sequence))
+                write_counter += 1
     logging.info("Wrote %s peptide fragments from %s unique protein sequences to %s", write_counter, len(sourceheaders), outfilename)
-
 
 
 def main(options):
@@ -103,7 +118,8 @@ def main(options):
     Main.
     """
     for xmlfile in options.FILE:
-        convert_tandem_bioml_to_fasta(xmlfile, options.outdir, options.outfile)
+        convert_tandem_bioml_to_fasta(xmlfile, options.outdir, options.outfile,
+                options.min_hyperscore, options.max_evalue)
 
 
 if __name__ == "__main__":
