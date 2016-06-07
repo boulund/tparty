@@ -71,7 +71,7 @@ def parse_commandline():
             help="Number of threads to use [%(default)s].")
     parser.add_argument("-e", "--evalue", metavar="e", dest="evalue",
             type=float,
-            default=1e15,
+            default=1.0,
             help="Maximum e-value (both refine and output filters) [%(default)s].")
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
             default="/storage/TTT/bin/tandem.exe",
