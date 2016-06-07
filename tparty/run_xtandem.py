@@ -38,7 +38,9 @@ INPUT_XML = """<?xml version="1.0"?>
 	<note type="input" label="protein, taxon">{taxon}</note>
 	<note type="input" label="spectrum, threads">{threads}</note>
 	<note type="input" label="spectrum, path">{input}</note>
+    <note type="input" label="refine, maximum valid expectation value">{evalue_refine}</note>
 	<note type="input" label="output, path">{output}</note>
+    <note type="input" label="output, maximum valid expectation value">{evalue_output}</note>
 </bioml>"""
 
 
@@ -67,6 +69,10 @@ def parse_commandline():
     parser.add_argument("-n", "--threads", dest="threads",
             default=10,
             help="Number of threads to use [%(default)s].")
+    parser.add_argument("-e", "--evalue", metavar="e", dest="evalue",
+            type=float,
+            default=1e15,
+            help="Maximum e-value (both refine and output filters) [%(default)s].")
     parser.add_argument("-x", "--xtandem", dest="xtandem_path",
             default="/storage/TTT/bin/tandem.exe",
             help="Path to X!Tandem executable [%(default)s].")
@@ -130,7 +136,7 @@ def run_xtandem(input_xml_filename, output_xml_filename, xtandem_executable):
         log.write(xtandem_output[1].decode("utf8"))
 
 
-def generate_xtandem_input_files(inputfiles, taxon, default_parameters, taxonomy, threads, output_filename):
+def generate_xtandem_input_files(inputfiles, taxon, default_parameters, taxonomy, threads, output_filename, max_evalue):
     """
     Creates input_FILENAME.xml for each input file.
     """
@@ -158,24 +164,27 @@ def generate_xtandem_input_files(inputfiles, taxon, default_parameters, taxonomy
                 taxon=taxon,  
                 threads=threads,
                 input=samplename, 
-                output=output_filename))
+                output=output_filename,
+                evalue_refine=max_evalue,
+                evalue_output=max_evalue))
         logging.debug("Wrote file %s for sample %s", input_xml_filename, samplename)
         yield input_xml_filename, output_filename
 
 
-def main():
+def main(options):
     """
     Main function.
     """
-    options = parse_commandline()
 
     for inputxml, outputxml in generate_xtandem_input_files(options.FILES, 
             options.taxon, 
             options.default_parameters, 
             options.taxonomy, 
             options.threads, 
-            options.output):
+            options.output,
+            options.evalue):
         run_xtandem(inputxml, outputxml, options.xtandem_path)
 
 if __name__ == "__main__":
-    main()
+    options = parse_commandline()
+    main(options)
