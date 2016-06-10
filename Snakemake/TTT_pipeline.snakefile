@@ -192,10 +192,10 @@ rule bacterial_xml2fasta:
     output:
         config["fastadir"]+"/{sample}.bacterial.fasta"
     version: 
-        "1.0"
+        "2.0"
     shell:
         """
-        convert_tandem_xml_2_fasta.py {input} --outfile {output}
+        convert_tandem_xml_2_fasta.py {input} --outfile {output} --min-hyperscore {config[xml2fasta_min_hyperscore]} --max-evalue {config[xml2fasta_max_evalue]}
         """
 
 #######################################

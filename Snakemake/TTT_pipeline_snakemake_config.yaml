@@ -97,6 +97,12 @@ xtandem_taxonomy:
 xtandem_threads:
     11
 
+# X!Tandem XML to FASTA conversion
+xml2fasta_min_hyperscore:
+    20.0
+xml2fasta_max_evalue:
+    1.0
+
 # Resistance determination
 resistance_min_identity:
     100.0
