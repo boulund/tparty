@@ -99,7 +99,7 @@ xtandem_threads:
 
 # X!Tandem XML to FASTA conversion
 xml2fasta_min_hyperscore:
-    20.0
+    32.0
 xml2fasta_max_evalue:
     1.0
 
