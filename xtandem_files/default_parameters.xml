@@ -5,8 +5,8 @@
 	<note type="input" label="list path, taxonomy information">taxonomy.xml</note>
 	<note type="heading">Spectrum general</note>
 	<note type="input" label="spectrum, fragment monoisotopic mass error">20</note>
-	<note type="input" label="spectrum, parent monoisotopic mass error plus">5</note>
-	<note type="input" label="spectrum, parent monoisotopic mass error minus">5</note>
+	<note type="input" label="spectrum, parent monoisotopic mass error plus">10</note>
+	<note type="input" label="spectrum, parent monoisotopic mass error minus">10</note>
 	<note type="input" label="spectrum, parent monoisotopic mass isotope error">yes</note>
 	<note type="input" label="spectrum, fragment monoisotopic mass error units">ppm</note>
 	<note type="input" label="spectrum, parent monoisotopic mass error units">ppm</note>
