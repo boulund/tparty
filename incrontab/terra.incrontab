@@ -1,0 +1,2 @@
+/collaborator/TTT/raw/ IN_CLOSE_WRITE /storage/TTT/bin/convert_raw_to_mzXML.sh $@/$# /storage/TTT/1.mzXML/$#
+/storage/TTT/1.mzXML/ IN_CLOSE_WRITE scp $@/$# athena:/storage/TTT/1.mzXML/
