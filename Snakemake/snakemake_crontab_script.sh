@@ -23,14 +23,14 @@
 # several threads. The maximum number of concurrent processes are limited by
 # the number of cores set here, and for a rule requiring 11 CPUs only two
 # simultaneous instances of that rule can run with 25 CPUs specified here.
-CORES=25
+CORES=40
 # Other limiting resources; mem, io
 # e.g. MEM=256 on a machine with 256 GB memory available for the pipeline
 # will limit the number of concurrent BLAT processes to about 10, since
 # each process requires 25 of the "mem" resource.
 # Setting IO=10 limits the number of concurrent IO-heavy jobs to 10,
 # at the time of this writing this is only the raw2mzxml rule
-MEM=160
+MEM=220
 IO=10
 # Adjust the process niceness (default processes run on 10; higher is lower
 # priority). 
