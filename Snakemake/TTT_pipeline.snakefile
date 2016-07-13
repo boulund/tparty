@@ -45,9 +45,9 @@ onerror:
 #####################################################################
 # Define SAMPLES to run on
 #####################################################################
-# All *.raw files present in config["rawdir"] will be included in the 
+# All *.raw files present in config["mzXMLdir"] will be included in the 
 # SAMPLES list of all samples to process.
-SAMPLES = glob_wildcards(config["rawdir"]+"/{sample}.raw").sample
+SAMPLES = glob_wildcards(config["mzXMLdir"]+"/{sample}.mzXML.gz").sample
 DBTAXA = ["bacterial", "human"]
 DBTYPES = ["bacterial", "resistance"]
 
@@ -259,7 +259,8 @@ rule taxonomic_composition:
     """Perform proteotyping (determine taxonomic composition) of sample based 
     on sequences matched by pBLAT"""
     input:
-        config["blast8dir"]+"/{sample}.bacterial.blast8"
+        blast8=config["blast8dir"]+"/{sample}.bacterial.blast8",
+        fasta=config["fastadir"]+"/{sample}.bacterial.fasta"
     output:
         sample_db=config["resultsdir"]+"/{sample}/{sample}.sqlite3",
         results=config["resultsdir"]+"/{sample}/{sample}.taxonomic_composition.txt",
@@ -271,9 +272,10 @@ rule taxonomic_composition:
         "1.0"
     shell:
         """
-        taxonomic_composition {input} \
+        taxonomic_composition {input.blast8} \
                 --taxref-db {config[taxref_db]} \
                 --annotation-db {config[annotation_db]} \
+                --peptide-fasta {input.fasta} \
                 --blacklist {config[blacklist]} \
                 --write-xlsx {output.xlsx} \
                 --write-discriminative-peptides {output.discpeps} \
