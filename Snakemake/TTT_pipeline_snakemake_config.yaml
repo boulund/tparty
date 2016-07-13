@@ -95,11 +95,11 @@ xtandem_defaults:
 xtandem_taxonomy:
     /storage/TTT/reference_data/taxonomy.xml
 xtandem_threads:
-    11
+    10
 
 # X!Tandem XML to FASTA conversion
 xml2fasta_min_hyperscore:
-    20.0
+    30.0
 xml2fasta_max_evalue:
     1.0
 
