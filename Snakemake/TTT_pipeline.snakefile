@@ -223,13 +223,15 @@ rule blat_bacterial:
         config["blast8dir"]+"/{sample}.bacterial.blast8"
     resources:
         mem=50
+    threads:
+        3
     shadow:
         True
     version:
-        "1.1"
+        "1.2"
     shell:
         """
-        flock .blat_running blat \
+        flock .blat_running01 blat \
             {config[blat_genome_db][0]} \
             {input} \
             -out=blast8 \
@@ -240,7 +242,7 @@ rule blat_bacterial:
             -minScore=10 \
             -minIdentity=90 \
             {output}_01 &
-        blat \
+        flock .blat_running02 blat \
             {config[blat_genome_db][1]} \
             {input} \
             -out=blast8 \
@@ -250,9 +252,23 @@ rule blat_bacterial:
             -stepSize=5 \
             -minScore=10 \
             -minIdentity=90 \
-            {output}_02
-        flock .blat_running cat {output}_01 {output}_02 > {output}
-        rm -fv {output}_01 {output}_02
+            {output}_02 &
+        flock .blat_running03 blat \
+            {config[blat_genome_db][2]} \
+            {input} \
+            -out=blast8 \
+            -t=dnax \
+            -q=prot \
+            -tileSize=5 \
+            -stepSize=5 \
+            -minScore=10 \
+            -minIdentity=90 \
+            {output}_03 &
+        flock .blat_running01 echo "BLAT 01 finished"
+        flock .blat_running02 echo "BLAT 02 finished"
+        flock .blat_running03 echo "BLAT 03 finished"
+        cat {output}_01 {output}_02 {output}_03 > {output} && \
+            rm -fv {output}_01 {output}_02 {output}_03
         """
 
 rule taxonomic_composition:

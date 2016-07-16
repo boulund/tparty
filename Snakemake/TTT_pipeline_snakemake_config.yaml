@@ -47,6 +47,7 @@ configfile:
 blat_genome_db:
     - /storage/TTT/reference_data/reference_genomes_01.fasta
     - /storage/TTT/reference_data/reference_genomes_02.fasta
+    - /storage/TTT/reference_data/reference_genomes_03.fasta
 taxref_db:
     /storage/TTT/reference_data/taxref.sqlite3
 annotation_db:
