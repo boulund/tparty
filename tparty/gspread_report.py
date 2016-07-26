@@ -194,7 +194,7 @@ def count_disc_peps(filename, ranks=("species", "no", "subspecies")):
     with open(filename) as f:
         disc_peps = 0
         for line in f:
-            if line.split()[1] in ranks:
+            if line.split()[2] in ranks:
                 disc_peps += 1
     return disc_peps
 
