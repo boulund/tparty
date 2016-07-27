@@ -193,6 +193,7 @@ def count_disc_peps(filename, ranks=("species", "no", "subspecies")):
     ranks = set(ranks)
     with open(filename) as f:
         disc_peps = 0
+        _ = [f.readline() for x in range(2)] # Skip the first two header lines
         for line in f:
             if line.split()[2] in ranks:
                 disc_peps += 1
