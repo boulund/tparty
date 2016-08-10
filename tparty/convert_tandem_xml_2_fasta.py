@@ -81,8 +81,8 @@ def generate_seqences_from_bioml_xml(xmlfile):
                        child.attrib["id"], 
                        child.attrib["expect"], 
                        child.attrib["hyperscore"], 
-                       child.attrib["z"],
-                       child.attrib["mh"],
+                       element.attrib["z"],
+                       element.attrib["mh"],
                        child.attrib["seq"])
                 break
             element.clear()
