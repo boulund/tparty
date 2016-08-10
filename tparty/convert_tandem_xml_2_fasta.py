@@ -81,6 +81,8 @@ def generate_seqences_from_bioml_xml(xmlfile):
                        child.attrib["id"], 
                        child.attrib["expect"], 
                        child.attrib["hyperscore"], 
+                       child.attrib["z"],
+                       child.attrib["mh"],
                        child.attrib["seq"])
                 break
             element.clear()
@@ -103,11 +105,11 @@ def convert_tandem_bioml_to_fasta(xmlfile, outdir, outfile, min_hyperscore, max_
     sourceheaders = set()
     write_counter = 0
     with open(outfilename, 'w') as fastafile:
-        for sourceheader, identity, expect, hyperscore, sequence in generate_seqences_from_bioml_xml(xmlfile):
+        for sourceheader, identity, expect, hyperscore, charge, mass, sequence in generate_seqences_from_bioml_xml(xmlfile):
             if float(expect) <= max_evalue and float(hyperscore) >= min_hyperscore:
                 sourceheaders.add(sourceheader)
-                logging.debug("Writing seq %s with length %s, expect %s, hyperscore %s.", identity, sequence, expect, hyperscore)
-                header = ">{}_{} expect={} hyperscore={}".format(identity, len(sequence), expect, hyperscore )
+                logging.debug("Writing seq %s with length %s, expect %s, hyperscore %s, charge %s, mass %s.", identity, sequence, expect, hyperscore, charge, mass)
+                header = ">{}_{} expect={} hyperscore={} z={} mh={}".format(identity, len(sequence), expect, hyperscore, charge, mass)
                 fastafile.write("{}\n{}\n".format(header, sequence))
                 write_counter += 1
     logging.info("Wrote %s peptide fragments from %s unique protein sequences to %s", write_counter, len(sourceheaders), outfilename)
