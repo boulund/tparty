@@ -407,7 +407,9 @@ rule gspread_report:
     log:
         config["resultsdir"]+"/{sample}/{sample}.gspread_report.log"
     version:
-        "1.1"
+        "1.2"
+    priority:
+        10
     shell:
         """
         gspread_report.py \
