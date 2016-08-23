@@ -412,7 +412,7 @@ rule gspread_report:
         10
     shell:
         """
-        gspread_report.py \
+        flock .gspread_lockfile gspread_report.py \
                 --tokenfile {config[google_token]} \
                 --snakemake-configfile {config[configfile]} \
                 --logfile {log} \
