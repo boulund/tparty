@@ -195,7 +195,11 @@ rule bacterial_xml2fasta:
         "2.0"
     shell:
         """
-        convert_tandem_xml_2_fasta.py {input} --outfile {output} --min-hyperscore {config[xml2fasta_min_hyperscore]} --max-evalue {config[xml2fasta_max_evalue]}
+        convert_tandem_xml_2_fasta.py \
+            {input} \
+            --outfile {output} \
+            --min-hyperscore {config[xml2fasta_min_hyperscore]} \
+            --max-evalue {config[xml2fasta_max_evalue]}
         """
 
 #######################################
@@ -209,10 +213,14 @@ rule unique_bacterial_proteins:
     output:
         config["resultsdir"]+"/{sample}/{sample}.unique_bacterial_proteins.txt"
     version:
-        "1.0"
+        "2.0"
     shell:
         """
-        create_unique_protein_list.py -o {output} {input}
+        create_unique_protein_list.py \
+            --min-hyperscore {config[xml2fasta_min_hyperscore]} \
+            --max-evalue {config[xml2fasta_max_evalue]} \
+            -o {output} \
+            {input}
         """
 
 rule blat_bacterial:
