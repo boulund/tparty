@@ -392,10 +392,14 @@ rule unique_human_proteins:
     output:
         config["resultsdir"]+"/{sample}/{sample}.unique_human_proteins.txt"
     version:
-        "1.0"
+        "2.0"
     shell:
         """
-        create_unique_protein_list.py -o {output} {input}
+        create_unique_protein_list.py \
+            --min-hyperscore {config[xml2fasta_min_hyperscore]} \
+            --max-evalue {config[xml2fasta_max_evalue]} \
+            -o {output} \
+            {input}
         """
 
 
