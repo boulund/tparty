@@ -61,5 +61,7 @@ flock -n $LOCKFILE \
 		--configfile TTT_pipeline_snakemake_config.yaml \
 		--cores $CORES \
 		--keep-going \
-        --resources mem=$MEM io=$IO \
-		$1
+		--resources mem=$MEM io=$IO \
+		$1 \
+	> >(tee TTT_pipeline.log.stdout) \
+	2> >(tee TTT_pipeline.log.stderr >&2)
