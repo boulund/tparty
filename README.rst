@@ -62,8 +62,7 @@ The method is described in the following papers:
 | TCUP: Typing and characterization of bacteria using bottom-up tandem mass spectrometry proteomics
 | Mol Cell Proteomics mcp.M116.061721. First Published on April 18, 2017, 
 | **DOI**:10.1074/mcp.M116.061721
-| Keywords: mass spectrometry, proteomics, microbial identification, pathogenic bacteria, antibiotic
-resistance detection, LC-MS/MS
+| Keywords: mass spectrometry, proteomics, microbial identification, pathogenic bacteria, antibiotic resistance detection, LC-MS/MS
 
 and
 
